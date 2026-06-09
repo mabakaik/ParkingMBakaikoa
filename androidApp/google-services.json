@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "145862500091",
+    "project_id": "lksparkingapp",
+    "storage_bucket": "lksparkingapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145862500091:android:183fc7cdbfab263d475a5e",
+        "android_client_info": {
+          "package_name": "com.lksnext.parkingmbakaikoa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsS6p3V5472PNNfdmftU_MAsZEp1R5G6M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
