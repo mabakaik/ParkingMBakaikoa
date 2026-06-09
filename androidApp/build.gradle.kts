@@ -4,6 +4,14 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    id("org.sonarqube") version "7.3.1.8318"
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "mabakaik_ParkingMBakaikoa")
+        property("sonar.organization", "mabakaik-1")
+    }
 }
 
 kotlin {
