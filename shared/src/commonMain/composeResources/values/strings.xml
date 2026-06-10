@@ -1,0 +1,17 @@
+<resources>
+    <!-- Login Screen -->
+    <string name="appName">Parking App</string>
+    <string name="subtitle">Reserva tu plaza fácilmente</string>
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="passwordForgotten">¿Has olvidado tu contraseña?</string>
+    <string name="noAccount">¿No tienes cuenta?</string>
+    <string name="createAccount">Crear cuenta</string>
+
+    <!-- Home Navigation -->
+    <string name="myBookings">Mis reservas</string>
+    <string name="calendar">Calendario</string>
+    <string name="history">Historial</string>
+    <string name="profile">Perfil</string>
+</resources>

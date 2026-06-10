@@ -1,28 +1,27 @@
 package com.lksnext.parkingmbakaikoa.ui.theme
 
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.ui.graphics.Color
 
 // ── Colores primarios ──────────────────────────────────────────────────────
-/** Color principal de la app — azul moderno */
-val PrimaryColor = Color(0xFF0066CC)
+/** Color principal de la app — naranja (desde Figma) */
+val PrimaryColor = Color(0xFFFF9800)
 
 /** Variante más clara del primario */
-val PrimaryLight = Color(0xFF4D99E6)
+val PrimaryLight = Color(0xFFFFB74D)
 
 /** Variante más oscura del primario */
-val PrimaryDark = Color(0xFF004A99)
+val PrimaryDark = Color(0xFFF57C00)
 
 // ── Colores secundarios ────────────────────────────────────────────────────
-/** Color secundario — naranja (para acciones complementarias) */
-val SecondaryColor = Color(0xFFFF9800)
+/** Color secundario — gris (desde Figma) */
+val SecondaryColor = Color(0xFF37474F)
 
 /** Variante clara del secundario */
-val SecondaryLight = Color(0xFFFFB84D)
+val SecondaryLight = Color(0xFF62727B)
 
 /** Variante oscura del secundario */
-val SecondaryDark = Color(0xFFCC7A00)
+val SecondaryDark = Color(0xFF102027)
 
 // ── Colores de estado ──────────────────────────────────────────────────────
 /** Color para errores */
@@ -39,7 +38,7 @@ val InfoColor = Color(0xFF1976D2)
 
 // ── Colores neutros ───────────────────────────────────────────────────────
 /** Fondo claro */
-val BackgroundLight = Color(0xFFFAFAFA)
+val BackgroundLight = Color(0xFAFAFAFA)
 
 /** Fondo oscuro */
 val BackgroundDark = Color(0xFF121212)
@@ -78,26 +77,5 @@ val LightColorScheme = lightColorScheme(
     surface = SurfaceLight,
     onSurface = TextPrimary,
     outlineVariant = BorderColor,
-)
-
-// ── Esquema de colores para tema oscuro ────────────────────────────────────
-val DarkColorScheme = darkColorScheme(
-    primary = PrimaryLight,
-    onPrimary = PrimaryDark,
-    primaryContainer = PrimaryDark,
-    onPrimaryContainer = PrimaryLight,
-    secondary = SecondaryLight,
-    onSecondary = SecondaryDark,
-    secondaryContainer = SecondaryDark,
-    onSecondaryContainer = SecondaryLight,
-    tertiary = Color(0xFF64B5F6),
-    onTertiary = Color.Black,
-    error = Color(0xFFFF6B6B),
-    onError = Color.Black,
-    background = BackgroundDark,
-    onBackground = Color.White,
-    surface = SurfaceDark,
-    onSurface = Color.White,
-    outlineVariant = Color(0xFF424242),
 )
 
