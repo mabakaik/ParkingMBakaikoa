@@ -1,8 +1,6 @@
-package com.lksnext.parkingmbakaikoa.ui.login
+package com.lksnext.parkingmbakaikoa.ui.register
 
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,29 +35,33 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-
 import com.lksnext.parkingmbakaikoa.ui.theme.ParkingAppTheme
 import com.lksnext.parkingmbakaikoa.ui.theme.PrimaryColor
 import com.lksnext.parkingmbakaikoa.ui.theme.SecondaryColor
 import org.jetbrains.compose.resources.stringResource
 import parkingmbakaikoa.shared.generated.resources.Res
 import parkingmbakaikoa.shared.generated.resources.appName
-import parkingmbakaikoa.shared.generated.resources.createAccount
+import parkingmbakaikoa.shared.generated.resources.register
+import parkingmbakaikoa.shared.generated.resources.firstName
+import parkingmbakaikoa.shared.generated.resources.lastName
 import parkingmbakaikoa.shared.generated.resources.email
-import parkingmbakaikoa.shared.generated.resources.login
-import parkingmbakaikoa.shared.generated.resources.noAccount
 import parkingmbakaikoa.shared.generated.resources.password
-import parkingmbakaikoa.shared.generated.resources.passwordForgotten
-import parkingmbakaikoa.shared.generated.resources.subtitle
+import parkingmbakaikoa.shared.generated.resources.createAccount
+import parkingmbakaikoa.shared.generated.resources.haveAccount
+import parkingmbakaikoa.shared.generated.resources.login
+
+import androidx.compose.foundation.clickable
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel, onCreateAccountClick: () -> Unit) {
+fun RegisterScreen(viewModel: RegisterViewModel, onBackToLogin: () -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
 
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val isLoading = uiState is LoginUiState.Loading
+    val isLoading = uiState is RegisterUiState.Loading
 
     Box(
         modifier = Modifier
@@ -67,10 +71,12 @@ fun LoginScreen(viewModel: LoginViewModel, onCreateAccountClick: () -> Unit) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 40.dp)
         ) {
             Text(
                 text = stringResource(Res.string.appName),
@@ -78,24 +84,25 @@ fun LoginScreen(viewModel: LoginViewModel, onCreateAccountClick: () -> Unit) {
                 color = PrimaryColor,
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text =  stringResource(Res.string.subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = SecondaryColor
+                text = stringResource(Res.string.createAccount),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onBackground,
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text( stringResource(Res.string.email)) },
+                value = firstName,
+                onValueChange = { firstName = it },
+                label = { Text(stringResource(Res.string.firstName)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next),
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
                 colors = OutlinedTextFieldDefaults.colors(
@@ -106,8 +113,50 @@ fun LoginScreen(viewModel: LoginViewModel, onCreateAccountClick: () -> Unit) {
                 shape = MaterialTheme.shapes.medium
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
-            
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = lastName,
+                onValueChange = { lastName = it },
+                label = { Text(stringResource(Res.string.lastName)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = PrimaryColor,
+                    focusedLabelColor = PrimaryColor,
+                    cursorColor = PrimaryColor
+                ),
+                shape = MaterialTheme.shapes.medium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text(stringResource(Res.string.email)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = PrimaryColor,
+                    focusedLabelColor = PrimaryColor,
+                    cursorColor = PrimaryColor
+                ),
+                shape = MaterialTheme.shapes.medium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -115,7 +164,8 @@ fun LoginScreen(viewModel: LoginViewModel, onCreateAccountClick: () -> Unit) {
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done),
+                    imeAction = ImeAction.Done
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
                 colors = OutlinedTextFieldDefaults.colors(
@@ -128,29 +178,21 @@ fun LoginScreen(viewModel: LoginViewModel, onCreateAccountClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = stringResource(Res.string.passwordForgotten),
-                color = SecondaryColor,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(modifier = Modifier.height(18.dp))
-            if (uiState is LoginUiState.ValidationError) {
+            if (uiState is RegisterUiState.ValidationError) {
                 Text(
-                    text = (uiState as LoginUiState.ValidationError).message,
+                    text = (uiState as RegisterUiState.ValidationError).message,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )
-            } else if (uiState is LoginUiState.Error) {
+            } else if (uiState is RegisterUiState.Error) {
                 Text(
-                    text = (uiState as LoginUiState.Error).message,
+                    text = (uiState as RegisterUiState.Error).message,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             if (isLoading) {
                 CircularProgressIndicator(
@@ -159,7 +201,7 @@ fun LoginScreen(viewModel: LoginViewModel, onCreateAccountClick: () -> Unit) {
                 )
             } else {
                 Button(
-                    onClick = { viewModel.login(email, password) },
+                    onClick = { viewModel.register(firstName, lastName, email, password) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
@@ -169,28 +211,29 @@ fun LoginScreen(viewModel: LoginViewModel, onCreateAccountClick: () -> Unit) {
                     )
                 ) {
                     Text(
-                        stringResource(Res.string.login),
+                        stringResource(Res.string.register),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(12.dp))
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row {
                 Text(
-                    text = stringResource(Res.string.noAccount),
+                    text = stringResource(Res.string.haveAccount),
                     color = SecondaryColor,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = stringResource(Res.string.createAccount),
+                    text = stringResource(Res.string.login),
                     color = PrimaryColor,
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.clickable { onCreateAccountClick() }
+                    modifier = Modifier.clickable{onBackToLogin()}
                 )
             }
-
         }
     }
 }
@@ -209,20 +252,21 @@ private val fakeRepository = object : com.lksnext.parkingmbakaikoa.data.reposito
 }
 
 @Composable
-fun LoginScreenIdlePreview() {
+fun RegisterScreenIdlePreview() {
     ParkingAppTheme {
-        LoginScreen(viewModel = LoginViewModel(fakeRepository), onCreateAccountClick = {})
+        RegisterScreen(viewModel = RegisterViewModel(fakeRepository), onBackToLogin = {})
     }
 }
 
-@Preview
 @Composable
-fun LoginScreenErrorPreview() {
+fun RegisterScreenErrorPreview() {
     ParkingAppTheme {
-        val errorVm = LoginViewModel(fakeRepository).also {
-            it.setStateForPreview(LoginUiState.Error("Correo o contraseña incorrectos"))
+        val errorVm = RegisterViewModel(fakeRepository).also {
+            it.setStateForPreview(RegisterUiState.ValidationError("email", "Email inválido"))
         }
-        LoginScreen(viewModel = errorVm, onCreateAccountClick = {})
+        RegisterScreen(viewModel = errorVm, onBackToLogin = {})
     }
 }
+
+
 

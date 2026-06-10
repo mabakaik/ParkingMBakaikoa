@@ -9,6 +9,12 @@
     <string name="noAccount">¿No tienes cuenta?</string>
     <string name="createAccount">Crear cuenta</string>
 
+    <!-- Register Screen -->
+    <string name="register">Registrarse</string>
+    <string name="firstName">Nombre</string>
+    <string name="lastName">Apellidos</string>
+    <string name="haveAccount">¿Ya tienes cuenta?</string>
+
     <!-- Home Navigation -->
     <string name="myBookings">Mis reservas</string>
     <string name="calendar">Calendario</string>

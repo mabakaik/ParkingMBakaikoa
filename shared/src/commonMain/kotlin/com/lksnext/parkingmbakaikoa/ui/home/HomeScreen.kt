@@ -4,19 +4,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.lksnext.parkingmbakaikoa.ui.auth.AuthStateViewModel
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.lksnext.parkingmbakaikoa.ui.home.screens.CalendarioScreen
@@ -37,12 +41,23 @@ import parkingmbakaikoa.shared.generated.resources.myBookings
 import parkingmbakaikoa.shared.generated.resources.profile
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(authStateViewModel: AuthStateViewModel) {
     val selectedTab = remember { mutableStateOf<HomeTab>(HomeTab.MyBookings) }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        TopAppBar(
+            title = { Text("Parking App") },
+            actions = {
+                IconButton(
+                    onClick = { authStateViewModel.logout() }
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout")
+                }
+            }
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -105,11 +120,22 @@ fun HomeScreen() {
 
 // ── Previews ──────────────────────────────────────────────────────────────────
 
+private val fakeAuthRepository = object : com.lksnext.parkingmbakaikoa.data.repository.AuthRepository {
+    override suspend fun register(firstName: String, lastName: String, email: String, password: String): Result<Unit> = Result.success(Unit)
+    override suspend fun login(email: String, password: String): Result<Unit> = Result.success(Unit)
+    override suspend fun logout(): Result<Unit> = Result.success(Unit)
+    override suspend fun isUserLoggedIn(): Boolean = true
+    override fun observeAuthState(onAuthStateChanged: (Boolean) -> Unit): (() -> Unit) {
+        onAuthStateChanged(true)
+        return {}
+    }
+}
+
 @Preview
 @Composable
 fun HomeScreenPreview() {
     ParkingAppTheme {
-        HomeScreen()
+        HomeScreen(authStateViewModel = AuthStateViewModel(fakeAuthRepository))
     }
 }
 
