@@ -6,6 +6,14 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    id("org.sonarqube") version "7.3.1.8318"
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "mabakaik_ParkingMBakaikoa")
+        property("sonar.organization", "mabakaik-1")
+    }
 }
 
 kotlin {
