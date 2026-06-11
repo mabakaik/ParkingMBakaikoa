@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     id("org.sonarqube") version "7.3.1.8318"
 }
-
+//Sonar
 sonar {
     properties {
         property("sonar.projectKey", "mabakaik_ParkingMBakaikoa")
