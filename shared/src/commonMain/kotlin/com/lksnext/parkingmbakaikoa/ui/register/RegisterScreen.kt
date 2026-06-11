@@ -35,7 +35,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.lksnext.parkingmbakaikoa.ui.theme.ParkingAppTheme
 import com.lksnext.parkingmbakaikoa.ui.theme.PrimaryColor
 import com.lksnext.parkingmbakaikoa.ui.theme.SecondaryColor
 import org.jetbrains.compose.resources.stringResource
@@ -51,9 +50,14 @@ import parkingmbakaikoa.shared.generated.resources.haveAccount
 import parkingmbakaikoa.shared.generated.resources.login
 
 import androidx.compose.foundation.clickable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.lksnext.parkingmbakaikoa.data.repository.AuthRepository
+import com.lksnext.parkingmbakaikoa.ui.navigation.Routes
 
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel, onBackToLogin: () -> Unit) {
+fun RegisterScreen(navController: NavController, authRepository: AuthRepository) {
+    val viewModel = viewModel { RegisterViewModel(authRepository) }
     val uiState by viewModel.uiState.collectAsState()
 
     var firstName by remember { mutableStateOf("") }
@@ -231,40 +235,13 @@ fun RegisterScreen(viewModel: RegisterViewModel, onBackToLogin: () -> Unit) {
                     text = stringResource(Res.string.login),
                     color = PrimaryColor,
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.clickable{onBackToLogin()}
+                    modifier = Modifier.clickable{
+                        viewModel.resetState()
+                        navController.navigate(Routes.Login.name)
+                    }
                 )
             }
         }
-    }
-}
-
-// ── Previews ──────────────────────────────────────────────────────────────────
-
-private val fakeRepository = object : com.lksnext.parkingmbakaikoa.data.repository.AuthRepository {
-    override suspend fun register(firstName: String, lastName: String, email: String, password: String): Result<Unit> = Result.success(Unit)
-    override suspend fun login(email: String, password: String): Result<Unit> = Result.success(Unit)
-    override suspend fun logout(): Result<Unit> = Result.success(Unit)
-    override suspend fun isUserLoggedIn(): Boolean = true
-    override fun observeAuthState(onAuthStateChanged: (Boolean) -> Unit): (() -> Unit) {
-        onAuthStateChanged(true)
-        return {}
-    }
-}
-
-@Composable
-fun RegisterScreenIdlePreview() {
-    ParkingAppTheme {
-        RegisterScreen(viewModel = RegisterViewModel(fakeRepository), onBackToLogin = {})
-    }
-}
-
-@Composable
-fun RegisterScreenErrorPreview() {
-    ParkingAppTheme {
-        val errorVm = RegisterViewModel(fakeRepository).also {
-            it.setStateForPreview(RegisterUiState.ValidationError("email", "Email inválido"))
-        }
-        RegisterScreen(viewModel = errorVm, onBackToLogin = {})
     }
 }
 

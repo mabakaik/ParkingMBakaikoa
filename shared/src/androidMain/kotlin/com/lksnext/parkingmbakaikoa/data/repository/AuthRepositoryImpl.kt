@@ -41,6 +41,17 @@ class AuthRepositoryImpl : AuthRepository {
         return firebaseAuth.currentUser != null
     }
 
+    override suspend fun sendPasswordResetEmail(email: String): Result<Unit> =
+        suspendCancellableCoroutine { continuation ->
+            firebaseAuth.sendPasswordResetEmail(email)
+                .addOnSuccessListener {
+                    if (continuation.isActive) continuation.resume(Result.success(Unit))
+                }
+                .addOnFailureListener { exception: Exception ->
+                    if (continuation.isActive) continuation.resume(Result.failure(exception))
+                }
+        }
+
     override fun observeAuthState(onAuthStateChanged: (Boolean) -> Unit): (() -> Unit) {
         val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             onAuthStateChanged(firebaseAuth.currentUser != null)

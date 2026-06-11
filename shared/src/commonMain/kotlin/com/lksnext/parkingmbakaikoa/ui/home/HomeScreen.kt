@@ -22,14 +22,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.lksnext.parkingmbakaikoa.ui.auth.AuthStateViewModel
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.lksnext.parkingmbakaikoa.data.repository.AuthRepository
 import com.lksnext.parkingmbakaikoa.ui.home.screens.CalendarioScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.HistorialScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.PerfilScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.ReservasScreen
 import com.lksnext.parkingmbakaikoa.ui.navigation.HomeTab
 import com.lksnext.parkingmbakaikoa.ui.theme.BackgroundLight
-import com.lksnext.parkingmbakaikoa.ui.theme.ParkingAppTheme
 import com.lksnext.parkingmbakaikoa.ui.theme.PrimaryColor
 import com.lksnext.parkingmbakaikoa.ui.theme.SecondaryColor
 import com.lksnext.parkingmbakaikoa.ui.theme.SurfaceLight
@@ -41,7 +42,8 @@ import parkingmbakaikoa.shared.generated.resources.myBookings
 import parkingmbakaikoa.shared.generated.resources.profile
 
 @Composable
-fun HomeScreen(authStateViewModel: AuthStateViewModel) {
+fun HomeScreen(authRepository: AuthRepository) {
+    val authStateViewModel = viewModel { AuthStateViewModel(authRepository) }
     val selectedTab = remember { mutableStateOf<HomeTab>(HomeTab.MyBookings) }
 
     Column(
@@ -115,27 +117,6 @@ fun HomeScreen(authStateViewModel: AuthStateViewModel) {
                 colors = navItemColors,
             )
         }
-    }
-}
-
-// ── Previews ──────────────────────────────────────────────────────────────────
-
-private val fakeAuthRepository = object : com.lksnext.parkingmbakaikoa.data.repository.AuthRepository {
-    override suspend fun register(firstName: String, lastName: String, email: String, password: String): Result<Unit> = Result.success(Unit)
-    override suspend fun login(email: String, password: String): Result<Unit> = Result.success(Unit)
-    override suspend fun logout(): Result<Unit> = Result.success(Unit)
-    override suspend fun isUserLoggedIn(): Boolean = true
-    override fun observeAuthState(onAuthStateChanged: (Boolean) -> Unit): (() -> Unit) {
-        onAuthStateChanged(true)
-        return {}
-    }
-}
-
-@Preview
-@Composable
-fun HomeScreenPreview() {
-    ParkingAppTheme {
-        HomeScreen(authStateViewModel = AuthStateViewModel(fakeAuthRepository))
     }
 }
 

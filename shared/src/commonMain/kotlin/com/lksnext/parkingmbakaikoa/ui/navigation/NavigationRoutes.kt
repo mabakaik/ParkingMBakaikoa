@@ -1,18 +1,31 @@
 package com.lksnext.parkingmbakaikoa.ui.navigation
 
-sealed class NavigationRoute {
-    data object Login : NavigationRoute()
-    data object Home : NavigationRoute()
-    data object MyBookings : NavigationRoute()
-    data object Calendar : NavigationRoute()
-    data object History : NavigationRoute()
-    data object Profile : NavigationRoute()
-}
+import org.jetbrains.compose.resources.StringResource
+import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.route_calendar
+import parkingmbakaikoa.shared.generated.resources.route_history
+import parkingmbakaikoa.shared.generated.resources.route_home
+import parkingmbakaikoa.shared.generated.resources.route_login
+import parkingmbakaikoa.shared.generated.resources.route_my_bookings
+import parkingmbakaikoa.shared.generated.resources.route_profile
+import parkingmbakaikoa.shared.generated.resources.route_register
+import parkingmbakaikoa.shared.generated.resources.route_reset_password
 
 sealed class HomeTab {
     data object MyBookings : HomeTab()
     data object Calendar : HomeTab()
     data object History : HomeTab()
     data object Profile : HomeTab()
+}
+
+enum class Routes(val title: StringResource) {
+    Home(title = Res.string.route_home),
+    Login(title = Res.string.route_login),
+    Register(title = Res.string.route_register),
+    ResetPassword(title = Res.string.route_reset_password),
+    MyBookings(title = Res.string.route_my_bookings),
+    Calendar(title = Res.string.route_calendar),
+    History(title = Res.string.route_history),
+    Profile(title = Res.string.route_profile),
 }
 

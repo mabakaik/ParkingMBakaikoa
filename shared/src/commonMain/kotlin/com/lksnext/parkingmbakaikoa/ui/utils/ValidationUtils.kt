@@ -17,7 +17,7 @@ object ValidationUtils {
     }
 
     fun isValidName(name: String): Boolean {
-        return name.isNotBlank() && name.length >= 2
+        return name.isNotBlank() && name.trim().length >= 2
     }
 }
 
