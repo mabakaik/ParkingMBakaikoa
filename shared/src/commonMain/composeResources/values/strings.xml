@@ -1,0 +1,40 @@
+<resources>
+    <!-- Navigation routes -->
+    <string name="route_home">Home</string>
+    <string name="route_login">Login</string>
+    <string name="route_register">Register</string>
+    <string name="route_reset_password">Reset password</string>
+    <string name="route_my_bookings">My bookings</string>
+    <string name="route_calendar">Calendar</string>
+    <string name="route_history">History</string>
+    <string name="route_profile">Profile</string>
+
+    <!-- Login Screen -->
+    <string name="appName">Parking App</string>
+    <string name="subtitle">Reserva tu plaza fácilmente</string>
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="passwordForgotten">¿Has olvidado tu contraseña?</string>
+    <string name="noAccount">¿No tienes cuenta?</string>
+    <string name="createAccount">Crear cuenta</string>
+
+    <!-- Register Screen -->
+    <string name="register">Registrarse</string>
+    <string name="firstName">Nombre</string>
+    <string name="lastName">Apellidos</string>
+    <string name="haveAccount">¿Ya tienes cuenta?</string>
+
+    <!-- Reset Password Screen -->
+    <string name="resetPassword">Recuperar contraseña</string>
+    <string name="resetPasswordSubtitle">Introduce tu correo electrónico para recibir un enlace de recuperación</string>
+    <string name="sendEmail">Enviar correo</string>
+    <string name="emailSent">Si el correo existe, se ha enviado un correo para resetear tu contraseña</string>
+    <string name="doYouRemember">¿Ya lo recordaste?</string>
+
+    <!-- Home -->
+    <string name="myBookings">Mis reservas</string>
+    <string name="calendar">Calendario</string>
+    <string name="history">Historial</string>
+    <string name="profile">Perfil</string>
+</resources>

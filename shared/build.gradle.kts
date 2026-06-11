@@ -47,13 +47,20 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.navigation.compose)
+
+            //Icons
+            implementation(compose.materialIconsExtended)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
+         commonTest.dependencies {
+             implementation(libs.kotlin.test)
+             implementation(libs.kotlinx.coroutines.test)
+         }
     }
 }
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+    add("androidMainImplementation", platform(libs.firebase.bom))
+    add("androidMainImplementation", libs.firebase.auth)
 }
