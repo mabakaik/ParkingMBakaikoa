@@ -18,8 +18,8 @@ fun PerfilScreen() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Perfil",
-            style = MaterialTheme.typography.headlineMedium
+            text = "Contenido del perfil próximamente...",
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

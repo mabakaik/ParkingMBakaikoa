@@ -18,8 +18,8 @@ fun HistorialScreen() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Historial",
-            style = MaterialTheme.typography.headlineMedium
+            text = "Contenido del historial próximamente...",
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

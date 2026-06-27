@@ -4,59 +4,58 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
 // ── Colores primarios ──────────────────────────────────────────────────────
-/** Color principal de la app — naranja (desde Figma) */
 val PrimaryColor = Color(0xFFFF9800)
-
-/** Variante más clara del primario */
 val PrimaryLight = Color(0xFFFFB74D)
-
-/** Variante más oscura del primario */
 val PrimaryDark = Color(0xFFF57C00)
+val primaryBackground = Color(0xFFFFE0B2)
 
 // ── Colores secundarios ────────────────────────────────────────────────────
-/** Color secundario — gris (desde Figma) */
 val SecondaryColor = Color(0xFF37474F)
-
-/** Variante clara del secundario */
 val SecondaryLight = Color(0xFF62727B)
-
-/** Variante oscura del secundario */
 val SecondaryDark = Color(0xFF102027)
 
 // ── Colores de estado ──────────────────────────────────────────────────────
-/** Color para errores */
 val ErrorColor = Color(0xFFD32F2F)
 
-/** Color para éxito / positivo */
 val SuccessColor = Color(0xFF388E3C)
 
-/** Color para advertencias */
 val WarningColor = Color(0xFFFFA726)
-
-/** Color para información */
 val InfoColor = Color(0xFF1976D2)
 
+// ── Colores de textos ───────────────────────────────────────────────────────
+val subtitleGreyMedium = Color(0xFF757575)
+
 // ── Colores neutros ───────────────────────────────────────────────────────
-/** Fondo claro */
 val BackgroundLight = Color(0xFAFAFAFA)
 
-/** Fondo oscuro */
 val BackgroundDark = Color(0xFF121212)
 
-/** Superficie clara */
 val SurfaceLight = Color(0xFFFFFFFF)
 
-/** Superficie oscura */
 val SurfaceDark = Color(0xFF1E1E1E)
 
-/** Texto primario */
 val TextPrimary = Color(0xFF212121)
 
-/** Texto secundario */
 val TextSecondary = Color(0xFF757575)
 
-/** Borde / divisor */
 val BorderColor = Color(0xFFE0E0E0)
+
+// ── Colores de estado de Reservas (Bookings) ───────────────────────────────
+// Confirmada
+val BookingConfirmedBackground = Color(0xFFC8E6C9)
+val BookingConfirmedText = Color(0xFF2E7D32)
+
+// En Curso
+val BookingInProgressBackground = Color(0xFFFFE0B2)
+val BookingInProgressText = Color(0xFFE65100)
+
+// Cancelada
+val BookingCancelledBackground = Color(0xFFFFCDD2)
+val BookingCancelledText = Color(0xFFC62828)
+
+// Terminada
+val BookingCompletedBackground = Color(0xFFE0E0E0)
+val BookingCompletedText = Color(0xFF424242)
 
 // ── Esquema de colores para tema claro ─────────────────────────────────────
 val LightColorScheme = lightColorScheme(

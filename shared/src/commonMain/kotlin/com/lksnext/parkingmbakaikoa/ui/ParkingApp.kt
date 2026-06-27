@@ -42,7 +42,6 @@ fun ParkingApp(authRepository: AuthRepository){
             }
             composable(route = Routes.Home.name){
                 HomeScreen(
-                    navController = navController,
                     authRepository = authRepository
                 )
             }

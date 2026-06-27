@@ -11,13 +11,6 @@ import parkingmbakaikoa.shared.generated.resources.route_profile
 import parkingmbakaikoa.shared.generated.resources.route_register
 import parkingmbakaikoa.shared.generated.resources.route_reset_password
 
-sealed class HomeTab {
-    data object MyBookings : HomeTab()
-    data object Calendar : HomeTab()
-    data object History : HomeTab()
-    data object Profile : HomeTab()
-}
-
 enum class Routes(val title: StringResource) {
     Home(title = Res.string.route_home),
     Login(title = Res.string.route_login),
@@ -27,5 +20,6 @@ enum class Routes(val title: StringResource) {
     Calendar(title = Res.string.route_calendar),
     History(title = Res.string.route_history),
     Profile(title = Res.string.route_profile),
+    BookingDetail(title = Res.string.route_my_bookings),
 }
 

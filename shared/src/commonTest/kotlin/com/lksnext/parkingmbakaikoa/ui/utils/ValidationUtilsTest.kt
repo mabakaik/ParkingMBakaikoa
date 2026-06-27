@@ -63,6 +63,11 @@ class ValidationUtilsTest {
     }
 
     @Test
+    fun isValidEmail_withMultipleAtSymbols_shouldReturnFalse() {
+        assertFalse(ValidationUtils.isValidEmail("user@@example.com"))
+    }
+
+    @Test
     fun isValidEmail_withoutUsername_shouldReturnFalse() {
         assertFalse(ValidationUtils.isValidEmail("@example.com"))
     }
@@ -163,6 +168,11 @@ class ValidationUtilsTest {
     }
 
     @Test
+    fun isStrongPassword_withSpaces_shouldReturnFalse() {
+        assertFalse(ValidationUtils.isStrongPassword("Pass word123!"))
+    }
+
+    @Test
     fun isStrongPassword_withVeryLongPassword_shouldReturnTrue() {
         val longPassword = "A".repeat(50) + "1!abc"
         assertTrue(ValidationUtils.isStrongPassword(longPassword))
@@ -256,4 +266,3 @@ class ValidationUtilsTest {
         assertTrue(ValidationUtils.isValidName("John"))
     }
 }
-

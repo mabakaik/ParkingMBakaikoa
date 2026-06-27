@@ -18,8 +18,8 @@ fun CalendarioScreen() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Calendario",
-            style = MaterialTheme.typography.headlineMedium
+            text = "Contenido del calendario próximamente...",
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
