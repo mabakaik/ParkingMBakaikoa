@@ -15,25 +15,25 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun login(email: String, password: String) {
-//        if (!ValidationUtils.isValidEmail(email)) {
-//            _uiState.value = LoginUiState.ValidationError("email", "Email inválido")
-//            return
-//        }
-//
-//        if (password.isBlank()) {
-//            _uiState.value = LoginUiState.ValidationError("password", "La contraseña no puede estar vacía")
-//            return
-//        }
-//
-//        viewModelScope.launch {
-//            _uiState.value = LoginUiState.Loading
-//            val result = authRepository.login(email, password)
-//            _uiState.value = result.fold(
-//                onSuccess = { LoginUiState.Success },
-//                onFailure = { LoginUiState.Error(it.message ?: "Error desconocido") }
-//            )
-//        }
-        _uiState.value = LoginUiState.Success;
+        if (!ValidationUtils.isValidEmail(email)) {
+            _uiState.value = LoginUiState.ValidationError("email", "Email inválido")
+            return
+        }
+
+        if (password.isBlank()) {
+            _uiState.value = LoginUiState.ValidationError("password", "La contraseña no puede estar vacía")
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.value = LoginUiState.Loading
+            val result = authRepository.login(email, password)
+            _uiState.value = result.fold(
+                onSuccess = { LoginUiState.Success },
+                onFailure = { LoginUiState.Error(it.message ?: "Error desconocido") }
+            )
+        }
+//        _uiState.value = LoginUiState.Success;
     }
 
     fun resetState() {

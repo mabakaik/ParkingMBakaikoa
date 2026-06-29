@@ -21,5 +21,6 @@ enum class Routes(val title: StringResource) {
     History(title = Res.string.route_history),
     Profile(title = Res.string.route_profile),
     BookingDetail(title = Res.string.route_my_bookings),
+    CreateBooking(title = Res.string.route_my_bookings),
 }
 

@@ -1,6 +1,7 @@
 package com.lksnext.parkingmbakaikoa.data.models
 
 data class Booking(
+    val id: String? = null,
     val parkingSpot: ParkingSpot,
     val entryTime: String,
     val exitTime: String,

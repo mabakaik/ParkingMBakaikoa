@@ -28,13 +28,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.lksnext.parkingmbakaikoa.data.repository.AuthRepository
+import com.lksnext.parkingmbakaikoa.data.repository.BookingRepository
 import com.lksnext.parkingmbakaikoa.ui.home.screens.CalendarioScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.HistorialScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.bookingDetail.BookingDetailScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.bookingDetail.BookingDetailViewModel
 import com.lksnext.parkingmbakaikoa.ui.home.screens.myBookings.MyBookingsScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.PerfilScreen
-import com.lksnext.parkingmbakaikoa.ui.home.screens.bookingDetail.BookingDetailViewModel
 import com.lksnext.parkingmbakaikoa.ui.home.screens.myBookings.MyBookingsViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.createBooking.CreateBookingScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.createBooking.CreateBookingViewModel
 import com.lksnext.parkingmbakaikoa.ui.navigation.Routes
 import com.lksnext.parkingmbakaikoa.ui.theme.BackgroundLight
 import com.lksnext.parkingmbakaikoa.ui.theme.PrimaryColor
@@ -48,11 +51,13 @@ import parkingmbakaikoa.shared.generated.resources.myBookings
 import parkingmbakaikoa.shared.generated.resources.profile
 
 @Composable
-fun HomeScreen(authRepository: AuthRepository) {
+fun HomeScreen(
+    authRepository: AuthRepository,
+    bookingRepository: BookingRepository
+) {
     val authStateViewModel = viewModel { AuthStateViewModel(authRepository) }
     val homeNavController = rememberNavController()
     val myBookingsViewModel = viewModel { MyBookingsViewModel() }
-    val bookingDetailViewModel = viewModel { BookingDetailViewModel() }
     val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -63,6 +68,7 @@ fun HomeScreen(authRepository: AuthRepository) {
         Routes.History.name -> stringResource(Res.string.history)
         Routes.Profile.name -> stringResource(Res.string.profile)
         Routes.BookingDetail.name -> "Detalle de Reserva"
+        Routes.CreateBooking.name -> "Nueva Reserva"
         else -> "Parking App"
     }
 
@@ -72,11 +78,13 @@ fun HomeScreen(authRepository: AuthRepository) {
         TopAppBar(
             title = { Text(title) },
             navigationIcon = {
-                // Mostrar flecha de back solo en BookingDetail
-                if (currentRoute == Routes.BookingDetail.name) {
+                // Mostrar flecha de back solo en BookingDetail y CreateBooking
+                if (currentRoute == Routes.BookingDetail.name || currentRoute == Routes.CreateBooking.name) {
                     IconButton(
                         onClick = {
-                            myBookingsViewModel.clearSelection()
+                            if (currentRoute == Routes.BookingDetail.name) {
+                                myBookingsViewModel.clearSelection()
+                            }
                             homeNavController.popBackStack()
                         }
                     ) {
@@ -128,9 +136,19 @@ fun HomeScreen(authRepository: AuthRepository) {
                             onModify = {
                                 // TODO: Navegar a pantalla de modificar
                             },
-                            viewModel = bookingDetailViewModel
+                            viewModel = viewModel { BookingDetailViewModel() }
                         )
                     }
+                }
+                composable(route = Routes.CreateBooking.name) {
+                    CreateBookingScreen(
+                        viewModel = viewModel { CreateBookingViewModel(bookingRepository)},
+                        onBookingCreated = {
+                            homeNavController.navigate(Routes.MyBookings.name) {
+                                popUpTo(Routes.MyBookings.name) { inclusive = true }
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -197,4 +215,3 @@ fun HomeScreen(authRepository: AuthRepository) {
         }
     }
 }
-

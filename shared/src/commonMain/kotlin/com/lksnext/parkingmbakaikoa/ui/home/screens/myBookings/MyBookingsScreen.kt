@@ -103,7 +103,7 @@ fun MyBookingsScreen(
         }
 
         FloatingActionButton(
-            onClick = { /* TODO: Implementar lógica para crear reserva */ },
+            onClick = { navController.navigate(Routes.CreateBooking.name) },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
@@ -166,7 +166,7 @@ fun BookingCard(booking: Booking, onClick: () -> Unit) {
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Text(
-                    text = "Plaza ${booking.parkingSpot.spaceName}",
+                    text = "Plaza ${booking.parkingSpot.name}",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
@@ -260,4 +260,3 @@ fun BookingInfo(icon: ImageVector, text: String){
         )
     }
 }
-

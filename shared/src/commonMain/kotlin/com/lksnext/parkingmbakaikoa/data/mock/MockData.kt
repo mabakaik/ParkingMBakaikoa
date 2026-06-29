@@ -51,37 +51,26 @@ object MockData {
 
     // Mock Parking Spots
     val mockParkingSpot1 = ParkingSpot(
-        spaceName = "A15",
-        entryTime = "09:00",
-        exitTime = "17:30",
-        date = "11 Jun 2026",
-        status = "Ocupada",
-        vehicle = mockVehicleCar1,
-        user = mockUser1
+        id = "A15",
+        name = "A15",
+        status = "Ocupada"
     )
 
     val mockParkingSpot2 = ParkingSpot(
-        spaceName = "B22",
-        entryTime = "08:30",
-        exitTime = "18:00",
-        date = "26 Jun 2026",
-        status = "Reservada",
-        vehicle = mockVehicleCar2,
-        user = mockUser2
+        id = "B22",
+        name = "B22",
+        status = "Reservada"
     )
 
     val mockParkingSpot3 = ParkingSpot(
-        spaceName = "C05",
-        entryTime = "10:00",
-        exitTime = "14:00",
-        date = "27 Jun 2026",
-        status = "Libre",
-        vehicle = mockVehicleMotorbike,
-        user = mockUser3
+        id = "C05",
+        name = "C05",
+        status = "Libre"
     )
 
     // Mock Bookings
     val mockBooking1 = Booking(
+        id = "BK001",
         parkingSpot = mockParkingSpot1,
         entryTime = "09:00",
         exitTime = "17:30",
@@ -93,6 +82,7 @@ object MockData {
     )
 
     val mockBooking2 = Booking(
+        id = "BK002",
         parkingSpot = mockParkingSpot2,
         entryTime = "08:30",
         exitTime = "18:00",
@@ -104,6 +94,7 @@ object MockData {
     )
 
     val mockBooking3 = Booking(
+        id = "BK003",
         parkingSpot = mockParkingSpot3,
         entryTime = "10:00",
         exitTime = "14:00",
@@ -115,9 +106,10 @@ object MockData {
     )
 
     val mockBooking4 = Booking(
+        id = "BK004",
         parkingSpot = mockParkingSpot1.copy(
-            spaceName = "D12",
-            date = "20 Jun 2026",
+            id = "D12",
+            name = "D12",
             status = "Cancelada"
         ),
         entryTime = "07:00",
@@ -130,9 +122,10 @@ object MockData {
     )
 
     val mockBooking5 = Booking(
+        id = "BK005",
         parkingSpot = mockParkingSpot2.copy(
-            spaceName = "E08",
-            date = "15 Jun 2026",
+            id = "E08",
+            name = "E08",
             status = "Terminada"
         ),
         entryTime = "09:30",

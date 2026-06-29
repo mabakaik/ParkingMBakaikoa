@@ -37,4 +37,17 @@
     <string name="calendar">Calendario</string>
     <string name="history">Historial</string>
     <string name="profile">Perfil</string>
+
+    <!-- Create booking screen -->
+    <string name="entryTime">Hora de entrada</string>
+    <string name="exitTime">Hora de salida</string>
+    <string name="createBooking">Crear reserva</string>
+    <string name="errorCreatingBookingTitle">Error al crear la reserva</string>
+    <string name="defaultErrorCreatingBookingText">Ha ocurrido un error al intentar crear la reserva. Por favor, inténtalo de nuevo.</string>
+
+    <!-- Utils -->
+    <string name="cancel">Cancelar</string>
+    <string name="accept">Aceptar</string>
+    <string name="chooseHour">Elige la hora</string>
+    <string name="chooseDate">Elige la fecha</string>
 </resources>

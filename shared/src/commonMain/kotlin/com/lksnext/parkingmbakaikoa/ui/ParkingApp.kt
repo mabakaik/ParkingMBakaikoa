@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lksnext.parkingmbakaikoa.data.repository.AuthRepository
+import com.lksnext.parkingmbakaikoa.data.repository.BookingRepository
 import com.lksnext.parkingmbakaikoa.ui.home.HomeScreen
 import com.lksnext.parkingmbakaikoa.ui.login.LoginScreen
 import com.lksnext.parkingmbakaikoa.ui.navigation.Routes
@@ -14,7 +15,10 @@ import com.lksnext.parkingmbakaikoa.ui.resetPassword.ResetPasswordScreen
 import com.lksnext.parkingmbakaikoa.ui.theme.ParkingAppTheme
 
 @Composable
-fun ParkingApp(authRepository: AuthRepository){
+fun ParkingApp(
+    authRepository: AuthRepository,
+    bookingRepository: BookingRepository
+){
     val navController: NavHostController = rememberNavController()
 
     ParkingAppTheme {
@@ -42,7 +46,8 @@ fun ParkingApp(authRepository: AuthRepository){
             }
             composable(route = Routes.Home.name){
                 HomeScreen(
-                    authRepository = authRepository
+                    authRepository = authRepository,
+                    bookingRepository = bookingRepository
                 )
             }
         }
