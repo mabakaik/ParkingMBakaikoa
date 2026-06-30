@@ -15,12 +15,24 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.coroutines.resume
 import kotlin.time.Clock
 import kotlin.time.Instant
+import org.jetbrains.compose.resources.getString
+import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.dateOutOfRangeError
+import parkingmbakaikoa.shared.generated.resources.dateRequired
+import parkingmbakaikoa.shared.generated.resources.entryTimeRequired
+import parkingmbakaikoa.shared.generated.resources.exitTimeBeforeEntryError
+import parkingmbakaikoa.shared.generated.resources.exitTimeExceedsMaxDurationError
+import parkingmbakaikoa.shared.generated.resources.exitTimeRequired
+import parkingmbakaikoa.shared.generated.resources.incompatibleSpotTypeError
+import parkingmbakaikoa.shared.generated.resources.selectSpotError
+import parkingmbakaikoa.shared.generated.resources.selectVehicle
+import kotlin.coroutines.resume
 
 data class CreateBookingState(
     val date: String = "",
+    val dateInMillis: Long = 0L,
     val entryTime: String = "",
     val exitTime: String = "",
     val selectedVehicle: Vehicle? = null,
@@ -33,47 +45,88 @@ data class CreateBookingState(
     val parkingSpotError: String? = null,
     val isLoading: Boolean = false,
     val errorCreatingBooking: Boolean = false,
-    val showSuccessDialog: Boolean = false
+    val showSuccessDialog: Boolean = false,
+    val parkingSpotSearchEnabled: Boolean = false
 )
 
-class CreateBookingViewModel(private val bookingRepository: BookingRepository) : ViewModel() {
+class CreateBookingViewModel(
+    private val bookingRepository: BookingRepository,
+    initialParkingSpot: ParkingSpot? = null
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateBookingState())
     val uiState: StateFlow<CreateBookingState> = _uiState.asStateFlow()
 
     private val userVehicles = MockData.mockVehicles
 
-    private val availableParkingSpots = listOf(
-        ParkingSpot("A01", "A01", "Libre"),
-        ParkingSpot("A02", "A02", "Libre"),
-        ParkingSpot("A15", "A15", "Libre"),
-        ParkingSpot("B05", "B05", "Libre"),
-        ParkingSpot("B12", "B12", "Libre"),
-        ParkingSpot("B22", "B22", "Libre"),
-        ParkingSpot("C03", "C03", "Libre"),
-        ParkingSpot("C05", "C05", "Libre"),
-        ParkingSpot("C18", "C18", "Libre"),
-        ParkingSpot("D04", "D04", "Libre"),
-        ParkingSpot("D12", "D12", "Libre"),
-        ParkingSpot("E08", "E08", "Libre"),
-        ParkingSpot("E15", "E15", "Libre"),
-    )
+    private val availableParkingSpots = MockData.mockCalendarParkingSpots
 
     init{
         onDateChanged(Clock.System.now().toEpochMilliseconds())
+        _uiState.value = _uiState.value.copy(
+            entryTime = "08:00",
+            exitTime = "17:00"
+        )
+        if (initialParkingSpot != null) {
+            onParkingSpotSelected(initialParkingSpot)
+        }
     }
 
     fun getUserVehicles(): List<Vehicle> = userVehicles
 
     fun getFilteredParkingSpots(): List<ParkingSpot> {
         val search = _uiState.value.parkingSpotSearch
-        return if (search.isEmpty()) {
+        val selectedVehicle = _uiState.value.selectedVehicle
+
+        return if (search.isEmpty() || selectedVehicle == null) {
             emptyList()
         } else {
             availableParkingSpots.filter {
-                it.name.contains(search, ignoreCase = true)
+                it.name.contains(search, ignoreCase = true) && it.type == selectedVehicle.type
             }
         }
+    }
+
+    private fun isDateInRange(dateInMillis: Long): Boolean {
+        val now = Clock.System.now()
+        // 7 días en milisegundos = 7 * 24 * 60 * 60 * 1000
+        val sevenDaysInMillis = 7L * 24 * 60 * 60 * 1000
+        val sevenDaysFromNow = Instant.fromEpochMilliseconds(now.toEpochMilliseconds() + sevenDaysInMillis)
+        val selectedDate = Instant.fromEpochMilliseconds(dateInMillis)
+
+        return selectedDate >= now && selectedDate <= sevenDaysFromNow
+    }
+
+    private fun parseTime(timeString: String): Pair<Int, Int>? {
+        if (timeString.isEmpty()) return null
+        val parts = timeString.split(":")
+        if (parts.size != 2) return null
+        return try {
+            Pair(parts[0].toInt(), parts[1].toInt())
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun isExitTimeValid(entryTime: String, exitTime: String): Pair<Boolean, String?> {
+        val entry = parseTime(entryTime) ?: return Pair(true, null)
+        val exit = parseTime(exitTime) ?: return Pair(true, null)
+
+        val entryMinutes = entry.first * 60 + entry.second
+        val exitMinutes = exit.first * 60 + exit.second
+
+        // Validar que la hora de salida no sea anterior a la de entrada
+        if (exitMinutes <= entryMinutes) {
+            return Pair(false, "exitTimeBeforeEntryError")
+        }
+
+        // Validar que la diferencia no sea mayor a 9 horas (540 minutos)
+        val diffMinutes = exitMinutes - entryMinutes
+        if (diffMinutes > 540) {
+            return Pair(false, "exitTimeExceedsMaxDurationError")
+        }
+
+        return Pair(true, null)
     }
 
     fun onDateChanged(dateInMillis: Long) {
@@ -84,7 +137,11 @@ class CreateBookingViewModel(private val bookingRepository: BookingRepository) :
                 "${monthNumber.toString().padStart(2, '0')}/" +
                 "${localDate.year}"
 
-        _uiState.value = _uiState.value.copy(date = formattedDate, dateError = null)
+        _uiState.value = _uiState.value.copy(
+            date = formattedDate,
+            dateInMillis = dateInMillis,
+            dateError = null
+        )
     }
 
     fun onEntryTimeChanged(time: String) {
@@ -96,10 +153,22 @@ class CreateBookingViewModel(private val bookingRepository: BookingRepository) :
     }
 
     fun onVehicleSelected(vehicle: Vehicle) {
-        _uiState.value = _uiState.value.copy(selectedVehicle = vehicle, vehicleError = null)
+        _uiState.value = _uiState.value.copy(
+            selectedVehicle = vehicle,
+            vehicleError = null,
+            parkingSpotSearchEnabled = true,
+            // Limpiar plaza seleccionada si el tipo cambió
+            selectedParkingSpot = if (_uiState.value.selectedParkingSpot?.type != vehicle.type) null else _uiState.value.selectedParkingSpot,
+            parkingSpotSearch = if (_uiState.value.selectedParkingSpot?.type != vehicle.type) "" else _uiState.value.parkingSpotSearch
+        )
     }
 
     fun onParkingSpotSearchChanged(search: String) {
+        // Solo permitir cambios si hay un vehículo seleccionado
+        if (_uiState.value.selectedVehicle == null) {
+            return
+        }
+
         _uiState.value = _uiState.value.copy(
             parkingSpotSearch = search,
             parkingSpotError = null
@@ -125,28 +194,56 @@ class CreateBookingViewModel(private val bookingRepository: BookingRepository) :
         val state = _uiState.value
         var isValid = true
 
+        // Validar fecha no vacía
         if (state.date.isEmpty()) {
-            _uiState.value = state.copy(dateError = "La fecha es obligatoria")
+            _uiState.value = state.copy(dateError = getString(Res.string.dateRequired))
+            isValid = false
+        }
+        // Validar rango de fecha (hoy a 7 días)
+        else if (!isDateInRange(state.dateInMillis)) {
+            _uiState.value = _uiState.value.copy(dateError = getString(Res.string.dateOutOfRangeError))
             isValid = false
         }
 
+        // Validar hora de entrada
         if (state.entryTime.isEmpty()) {
-            _uiState.value = _uiState.value.copy(entryTimeError = "La hora de entrada es obligatoria")
+            _uiState.value = _uiState.value.copy(entryTimeError = getString(Res.string.entryTimeRequired))
             isValid = false
         }
 
+        // Validar hora de salida
         if (state.exitTime.isEmpty()) {
-            _uiState.value = _uiState.value.copy(exitTimeError = "La hora de salida es obligatoria")
+            _uiState.value = _uiState.value.copy(exitTimeError = getString(Res.string.exitTimeRequired))
             isValid = false
         }
+        // Validar que hora de salida sea válida respecto a la de entrada
+        else if (state.entryTime.isNotEmpty()) {
+            val (isTimeValid, errorKey) = isExitTimeValid(state.entryTime, state.exitTime)
+            if (!isTimeValid && errorKey != null) {
+                val errorMessage = when (errorKey) {
+                    "exitTimeBeforeEntryError" -> getString(Res.string.exitTimeBeforeEntryError)
+                    "exitTimeExceedsMaxDurationError" -> getString(Res.string.exitTimeExceedsMaxDurationError)
+                    else -> getString(Res.string.exitTimeRequired)
+                }
+                _uiState.value = _uiState.value.copy(exitTimeError = errorMessage)
+                isValid = false
+            }
+        }
 
+        // Validar vehículo seleccionado
         if (state.selectedVehicle == null) {
-            _uiState.value = _uiState.value.copy(vehicleError = "Selecciona un vehículo")
+            _uiState.value = _uiState.value.copy(vehicleError = getString(Res.string.selectVehicle))
             isValid = false
         }
 
+        // Validar plaza seleccionada
         if (state.selectedParkingSpot == null) {
-            _uiState.value = _uiState.value.copy(parkingSpotError = "Selecciona una plaza")
+            _uiState.value = _uiState.value.copy(parkingSpotError = getString(Res.string.selectSpotError))
+            isValid = false
+        }
+        // Validar compatibilidad de tipo entre vehículo y plaza
+        else if (state.selectedVehicle != null && state.selectedParkingSpot.type != state.selectedVehicle.type) {
+            _uiState.value = _uiState.value.copy(parkingSpotError = getString(Res.string.incompatibleSpotTypeError))
             isValid = false
         }
 
@@ -196,7 +293,7 @@ class CreateBookingViewModel(private val bookingRepository: BookingRepository) :
                             continuation.resume(false)
                         }
                     }
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     _uiState.value = _uiState.value.copy(isLoading = false, errorCreatingBooking = true)
                     continuation.resume(false)
                 }

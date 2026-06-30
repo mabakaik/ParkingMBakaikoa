@@ -39,6 +39,7 @@ import com.lksnext.parkingmbakaikoa.ui.theme.PrimaryColor
 import org.jetbrains.compose.resources.stringResource
 import parkingmbakaikoa.shared.generated.resources.Res
 import parkingmbakaikoa.shared.generated.resources.addVehicle
+import parkingmbakaikoa.shared.generated.resources.platePlaceholder
 import parkingmbakaikoa.shared.generated.resources.selectVehicleType
 import parkingmbakaikoa.shared.generated.resources.vehiclePlate
 import parkingmbakaikoa.shared.generated.resources.vehicleType
@@ -74,7 +75,7 @@ fun AddVehicleScreen(
             value = uiState.plate,
             onValueChange = { viewModel.onPlateChange(it) },
             label = { Text(stringResource(Res.string.vehiclePlate)) },
-            placeholder = { Text("Ej: 1234 ABC") },
+            placeholder = { Text(stringResource(Res.string.platePlaceholder)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,

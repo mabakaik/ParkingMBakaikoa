@@ -20,6 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.back
+import parkingmbakaikoa.shared.generated.resources.comingSoon
+import parkingmbakaikoa.shared.generated.resources.modifyBooking
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,12 +34,12 @@ fun ModifyBookingScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Modificar Reserva") },
+                title = { Text(stringResource(Res.string.modifyBooking)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver"
+                            contentDescription = stringResource(Res.string.back)
                         )
                     }
                 },
@@ -57,12 +62,12 @@ fun ModifyBookingScreen(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Modificar Reserva",
+                    text = stringResource(Res.string.modifyBooking),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "Próximamente",
+                    text = stringResource(Res.string.comingSoon),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)

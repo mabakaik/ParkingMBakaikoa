@@ -50,6 +50,16 @@ import com.lksnext.parkingmbakaikoa.ui.theme.BookingInProgressText
 import com.lksnext.parkingmbakaikoa.ui.theme.CardShape
 import com.lksnext.parkingmbakaikoa.ui.theme.primaryBackground
 import com.lksnext.parkingmbakaikoa.ui.theme.subtitleGreyMedium
+import org.jetbrains.compose.resources.stringResource
+import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.bookingStatusCancelled
+import parkingmbakaikoa.shared.generated.resources.bookingStatusConfirmed
+import parkingmbakaikoa.shared.generated.resources.bookingStatusFinished
+import parkingmbakaikoa.shared.generated.resources.bookingStatusInProgress
+import parkingmbakaikoa.shared.generated.resources.createBookingContentDescription
+import parkingmbakaikoa.shared.generated.resources.noActiveBookings
+import parkingmbakaikoa.shared.generated.resources.spotName
+import parkingmbakaikoa.shared.generated.resources.vehicleType
 import kotlin.String
 
 @Composable
@@ -94,7 +104,7 @@ fun MyBookingsScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No tienes reservas activas",
+                        text = stringResource(Res.string.noActiveBookings),
                         style = MaterialTheme.typography.bodyMedium,
                         color = subtitleGreyMedium
                     )
@@ -111,7 +121,7 @@ fun MyBookingsScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "Crear nueva reserva",
+                contentDescription = stringResource(Res.string.createBookingContentDescription),
                 tint = Color.Black
             )
         }
@@ -156,7 +166,7 @@ fun BookingCard(booking: Booking, onClick: () -> Unit) {
                     ) {
                         Icon(
                             imageVector = Icons.Default.DirectionsCar,
-                            contentDescription = "Tipo de vehículo",
+                            contentDescription = stringResource(Res.string.vehicleType),
                             modifier = Modifier.size(28.dp),
                             tint = Color.Black
                         )
@@ -166,7 +176,7 @@ fun BookingCard(booking: Booking, onClick: () -> Unit) {
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Text(
-                    text = "Plaza ${booking.parkingSpot.name}",
+                    text = stringResource(Res.string.spotName, booking.parkingSpot.name),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
@@ -216,10 +226,10 @@ fun BookingCard(booking: Booking, onClick: () -> Unit) {
 @Composable
 fun getBookingStatusText(status: BookingStatus): String {
     return when (status) {
-        BookingStatus.EN_CURSO -> "En Curso"
-        BookingStatus.CANCELADA -> "Cancelada"
-        BookingStatus.CONFIRMADA -> "Confirmada"
-        BookingStatus.TERMINADA -> "Terminada"
+        BookingStatus.EN_CURSO -> stringResource(Res.string.bookingStatusInProgress)
+        BookingStatus.CANCELADA -> stringResource(Res.string.bookingStatusCancelled)
+        BookingStatus.CONFIRMADA -> stringResource(Res.string.bookingStatusConfirmed)
+        BookingStatus.TERMINADA -> stringResource(Res.string.bookingStatusFinished)
     }
 }
 

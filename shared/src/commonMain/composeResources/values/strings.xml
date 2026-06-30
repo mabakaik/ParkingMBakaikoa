@@ -43,8 +43,8 @@
     <string name="profile">Perfil</string>
 
     <!-- Create booking screen -->
-    <string name="entryTime">Hora de entrada</string>
-    <string name="exitTime">Hora de salida</string>
+    <string name="entryTime">Entrada</string>
+    <string name="exitTime">Salida</string>
     <string name="createBooking">Crear reserva</string>
     <string name="errorCreatingBookingTitle">Error al crear la reserva</string>
     <string name="defaultErrorCreatingBookingText">Ha ocurrido un error al intentar crear la reserva. Por favor, inténtalo de nuevo.</string>
@@ -83,5 +83,108 @@
     <string name="vehicleTypeCar">Coche</string>
     <string name="vehicleTypeMotorbike">Moto</string>
     <string name="vehicleTypeElectric">Eléctrico</string>
+
+    <!-- Calendar screen -->
+    <string name="calendarFilterTitle">Tipo de plaza</string>
+    <string name="calendarFilterAll">Todas</string>
+    <string name="calendarAvailableSpots">Plazas libres</string>
+    <string name="calendarNoSpots">No hay plazas libres para este día</string>
+    <string name="calendarSpotFree">Libre</string>
+    <string name="calendarSpotOccupied">Ocupada</string>
+    <string name="calendarPageIndicator">Página %1$d de %2$d</string>
+    <string name="calendarPreviousPage">Página anterior</string>
+    <string name="calendarNextPage">Página siguiente</string>
+    <string name="calendarToday">Hoy</string>
+
+    <!-- Week day short labels -->
+    <string name="dayMonday">Lun</string>
+    <string name="dayTuesday">Mar</string>
+    <string name="dayWednesday">Mié</string>
+    <string name="dayThursday">Jue</string>
+    <string name="dayFriday">Vie</string>
+    <string name="daySaturday">Sáb</string>
+    <string name="daySunday">Dom</string>
+
+    <!-- Common / content descriptions -->
+    <string name="back">Volver</string>
+    <string name="logoContentDescription">Logo</string>
+    <string name="emailLabel">Email</string>
+
+    <!-- Splash screen -->
+    <string name="splashTitle">ParkingMBakaikoa</string>
+    <string name="splashSubtitle">Gestiona tu parking fácilmente</string>
+
+    <!-- Home top bar titles -->
+    <string name="bookingDetailTitle">Detalle de Reserva</string>
+    <string name="newBookingTitle">Nueva Reserva</string>
+
+    <!-- Booking status -->
+    <string name="bookingStatusInProgress">En Curso</string>
+    <string name="bookingStatusCancelled">Cancelada</string>
+    <string name="bookingStatusConfirmed">Confirmada</string>
+    <string name="bookingStatusFinished">Terminada</string>
+
+    <!-- My bookings screen -->
+    <string name="noActiveBookings">No tienes reservas activas</string>
+    <string name="createBookingContentDescription">Crear nueva reserva</string>
+    <string name="spotName">Plaza %1$s</string>
+
+    <!-- Booking detail screen -->
+    <string name="bookingDate">Fecha</string>
+    <string name="bookingTime">Hora</string>
+    <string name="bookingVehicle">Vehículo</string>
+    <string name="scheduleRecord">Registro de horarios</string>
+    <string name="entryLabel">Entrada</string>
+    <string name="exitLabel">Salida</string>
+    <string name="notRegistered">No registrada</string>
+    <string name="registerEntry">Registrar Entrada</string>
+    <string name="registerExit">Registrar Salida</string>
+    <string name="modifyBooking">Modificar Reserva</string>
+
+    <!-- History screen -->
+    <string name="last30Days">Últimos 30 días</string>
+    <string name="noHistoryBookings">No hay reservas en los últimos 30 días</string>
+
+    <!-- Modify booking screen -->
+    <string name="comingSoon">Próximamente</string>
+
+    <!-- Create booking screen extras -->
+    <string name="selectVehicle">Selecciona un vehículo</string>
+    <string name="parkingSpotLabel">Plaza de Parking</string>
+    <string name="searchSpotPlaceholder">Buscar plaza (ej: A01, B15...)</string>
+    <string name="available">Disponible</string>
+    <string name="datePlaceholder">DD/MM/AAAA</string>
+    <string name="timePlaceholder">HH:MM</string>
+    <string name="loading">Cargando...</string>
+    <string name="bookingCreatedTitle">Reserva creada</string>
+    <string name="bookingCreatedMessage">La reserva se creó correctamente.</string>
+
+    <!-- Add vehicle extras -->
+    <string name="platePlaceholder">Ej: 1234 ABC</string>
+
+    <!-- Validation / error messages -->
+    <string name="invalidEmail">Email inválido</string>
+    <string name="passwordEmpty">La contraseña no puede estar vacía</string>
+    <string name="unknownError">Error desconocido</string>
+    <string name="firstNameMinLength">El nombre debe tener al menos 2 caracteres</string>
+    <string name="lastNameMinLength">Los apellidos deben tener al menos 2 caracteres</string>
+    <string name="weakPassword">La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un símbolo especial</string>
+    <string name="registerError">Error en el registro</string>
+    <string name="resetPasswordError">Error al enviar el correo de recuperación</string>
+    <string name="loadUserError">Error al cargar usuario</string>
+    <string name="firstNameRequired">El nombre es obligatorio</string>
+    <string name="lastNameRequired">Los apellidos son obligatorios</string>
+    <string name="emailRequired">El email es obligatorio</string>
+    <string name="saveError">Error al guardar</string>
+    <string name="addVehicleError">Error al añadir vehículo</string>
+    <string name="dateRequired">La fecha es obligatoria</string>
+    <string name="entryTimeRequired">La hora de entrada es obligatoria</string>
+    <string name="exitTimeRequired">La hora de salida es obligatoria</string>
+    <string name="selectSpotError">Selecciona una plaza</string>
+    <string name="dateOutOfRangeError">La fecha debe estar entre hoy y los próximos 7 días</string>
+    <string name="exitTimeBeforeEntryError">La hora de salida no puede ser anterior a la de entrada</string>
+    <string name="exitTimeExceedsMaxDurationError">La hora de salida debe ser como máximo 9 horas después de la entrada</string>
+    <string name="selectVehicleFirstError">Debes seleccionar un vehículo primero</string>
+    <string name="incompatibleSpotTypeError">Esta plaza no es compatible con el tipo de vehículo seleccionado</string>
 
 </resources>

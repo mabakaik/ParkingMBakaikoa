@@ -11,6 +11,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.addVehicleError
+import parkingmbakaikoa.shared.generated.resources.plateInvalid
+import parkingmbakaikoa.shared.generated.resources.plateRequired
+import parkingmbakaikoa.shared.generated.resources.vehicleTypeRequired
 
 class AddVehicleViewModel(
     private val vehicleRepository: VehicleRepository
@@ -20,11 +26,14 @@ class AddVehicleViewModel(
     val uiState: StateFlow<AddVehicleUiState> = _uiState.asStateFlow()
 
     fun onPlateChange(plate: String) {
-        _uiState.update {
-            it.copy(
-                plate = plate,
-                plateError = if (plate.isEmpty()) null else validatePlate(plate)
-            )
+        viewModelScope.launch {
+            val plateError = if (plate.isEmpty()) null else validatePlate(plate)
+            _uiState.update {
+                it.copy(
+                    plate = plate,
+                    plateError = plateError
+                )
+            }
         }
     }
 
@@ -38,23 +47,23 @@ class AddVehicleViewModel(
     }
 
     fun addVehicle() {
-        val state = _uiState.value
-
-        // Validar todos los campos
-        val plateError = validatePlate(state.plate)
-        val typeError = if (state.selectedType == null) "Debes seleccionar un tipo de vehículo" else null
-
-        if (plateError != null || typeError != null) {
-            _uiState.update {
-                it.copy(
-                    plateError = plateError,
-                    typeError = typeError
-                )
-            }
-            return
-        }
-
         viewModelScope.launch {
+            val state = _uiState.value
+
+            // Validar todos los campos
+            val plateError = validatePlate(state.plate)
+            val typeError = if (state.selectedType == null) getString(Res.string.vehicleTypeRequired) else null
+
+            if (plateError != null || typeError != null) {
+                _uiState.update {
+                    it.copy(
+                        plateError = plateError,
+                        typeError = typeError
+                    )
+                }
+                return@launch
+            }
+
             _uiState.update { it.copy(isLoading = true) }
 
             val newVehicle = Vehicle(
@@ -70,17 +79,17 @@ class AddVehicleViewModel(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        plateError = exception.message ?: "Error al añadir vehículo"
+                        plateError = exception.message ?: getString(Res.string.addVehicleError)
                     )
                 }
             }
         }
     }
 
-    private fun validatePlate(plate: String): String? {
+    private suspend fun validatePlate(plate: String): String? {
         return when {
-            plate.isBlank() -> "La matrícula es obligatoria"
-            !ValidationUtils.isValidPlate(plate) -> "La matrícula debe tener al menos 3 caracteres"
+            plate.isBlank() -> getString(Res.string.plateRequired)
+            !ValidationUtils.isValidPlate(plate) -> getString(Res.string.plateInvalid)
             else -> null
         }
     }

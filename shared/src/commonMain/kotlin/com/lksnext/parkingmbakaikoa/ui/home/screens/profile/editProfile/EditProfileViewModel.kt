@@ -10,6 +10,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.emailRequired
+import parkingmbakaikoa.shared.generated.resources.firstNameMinLength
+import parkingmbakaikoa.shared.generated.resources.firstNameRequired
+import parkingmbakaikoa.shared.generated.resources.invalidEmail
+import parkingmbakaikoa.shared.generated.resources.lastNameMinLength
+import parkingmbakaikoa.shared.generated.resources.lastNameRequired
+import parkingmbakaikoa.shared.generated.resources.loadUserError
+import parkingmbakaikoa.shared.generated.resources.saveError
 
 class EditProfileViewModel(
     private val userRepository: UserRepository
@@ -43,7 +53,7 @@ class EditProfileViewModel(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        emailError = exception.message ?: "Error al cargar usuario"
+                        emailError = exception.message ?: getString(Res.string.loadUserError)
                     )
                 }
             }
@@ -51,29 +61,38 @@ class EditProfileViewModel(
     }
 
     fun onFirstNameChange(firstName: String) {
-        _uiState.update {
-            it.copy(
-                firstName = firstName,
-                firstNameError = validateFirstName(firstName)
-            )
+        viewModelScope.launch {
+            val error = validateFirstName(firstName)
+            _uiState.update {
+                it.copy(
+                    firstName = firstName,
+                    firstNameError = error
+                )
+            }
         }
     }
 
     fun onLastNameChange(lastName: String) {
-        _uiState.update {
-            it.copy(
-                lastName = lastName,
-                lastNameError = validateLastName(lastName)
-            )
+        viewModelScope.launch {
+            val error = validateLastName(lastName)
+            _uiState.update {
+                it.copy(
+                    lastName = lastName,
+                    lastNameError = error
+                )
+            }
         }
     }
 
     fun onEmailChange(email: String) {
-        _uiState.update {
-            it.copy(
-                email = email,
-                emailError = validateEmail(email)
-            )
+        viewModelScope.launch {
+            val error = validateEmail(email)
+            _uiState.update {
+                it.copy(
+                    email = email,
+                    emailError = error
+                )
+            }
         }
     }
 
@@ -81,23 +100,23 @@ class EditProfileViewModel(
         val state = _uiState.value
         val user = currentUser ?: return
 
-        // Validar todos los campos
-        val firstNameError = validateFirstName(state.firstName)
-        val lastNameError = validateLastName(state.lastName)
-        val emailError = validateEmail(state.email)
-
-        if (firstNameError != null || lastNameError != null || emailError != null) {
-            _uiState.update {
-                it.copy(
-                    firstNameError = firstNameError,
-                    lastNameError = lastNameError,
-                    emailError = emailError
-                )
-            }
-            return
-        }
-
         viewModelScope.launch {
+            // Validar todos los campos
+            val firstNameError = validateFirstName(state.firstName)
+            val lastNameError = validateLastName(state.lastName)
+            val emailError = validateEmail(state.email)
+
+            if (firstNameError != null || lastNameError != null || emailError != null) {
+                _uiState.update {
+                    it.copy(
+                        firstNameError = firstNameError,
+                        lastNameError = lastNameError,
+                        emailError = emailError
+                    )
+                }
+                return@launch
+            }
+
             _uiState.update { it.copy(isLoading = true) }
 
             val updatedUser = user.copy(
@@ -113,33 +132,33 @@ class EditProfileViewModel(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        emailError = exception.message ?: "Error al guardar"
+                        emailError = exception.message ?: getString(Res.string.saveError)
                     )
                 }
             }
         }
     }
 
-    private fun validateFirstName(firstName: String): String? {
+    private suspend fun validateFirstName(firstName: String): String? {
         return when {
-            firstName.isBlank() -> "El nombre es obligatorio"
-            !ValidationUtils.isValidName(firstName) -> "El nombre debe tener al menos 2 caracteres"
+            firstName.isBlank() -> getString(Res.string.firstNameRequired)
+            !ValidationUtils.isValidName(firstName) -> getString(Res.string.firstNameMinLength)
             else -> null
         }
     }
 
-    private fun validateLastName(lastName: String): String? {
+    private suspend fun validateLastName(lastName: String): String? {
         return when {
-            lastName.isBlank() -> "Los apellidos son obligatorios"
-            !ValidationUtils.isValidName(lastName) -> "Los apellidos deben tener al menos 2 caracteres"
+            lastName.isBlank() -> getString(Res.string.lastNameRequired)
+            !ValidationUtils.isValidName(lastName) -> getString(Res.string.lastNameMinLength)
             else -> null
         }
     }
 
-    private fun validateEmail(email: String): String? {
+    private suspend fun validateEmail(email: String): String? {
         return when {
-            email.isBlank() -> "El email es obligatorio"
-            !ValidationUtils.isValidEmail(email) -> "Email inválido"
+            email.isBlank() -> getString(Res.string.emailRequired)
+            !ValidationUtils.isValidEmail(email) -> getString(Res.string.invalidEmail)
             else -> null
         }
     }

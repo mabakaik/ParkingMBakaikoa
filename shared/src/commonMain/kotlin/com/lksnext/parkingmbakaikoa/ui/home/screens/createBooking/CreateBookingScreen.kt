@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,7 +25,10 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.ElectricCar
 import androidx.compose.material.icons.filled.LocalParking
+import androidx.compose.material.icons.filled.TwoWheeler
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -62,19 +66,31 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.lksnext.parkingmbakaikoa.data.models.VehicleType
 import com.lksnext.parkingmbakaikoa.ui.theme.PrimaryColor
 import com.lksnext.parkingmbakaikoa.ui.theme.subtitleGreyMedium
 import org.jetbrains.compose.resources.stringResource
 import parkingmbakaikoa.shared.generated.resources.Res
 import parkingmbakaikoa.shared.generated.resources.accept
+import parkingmbakaikoa.shared.generated.resources.available
+import parkingmbakaikoa.shared.generated.resources.bookingCreatedMessage
+import parkingmbakaikoa.shared.generated.resources.bookingCreatedTitle
+import parkingmbakaikoa.shared.generated.resources.bookingDate
+import parkingmbakaikoa.shared.generated.resources.bookingVehicle
 import parkingmbakaikoa.shared.generated.resources.cancel
 import parkingmbakaikoa.shared.generated.resources.chooseDate
 import parkingmbakaikoa.shared.generated.resources.chooseHour
 import parkingmbakaikoa.shared.generated.resources.createBooking
+import parkingmbakaikoa.shared.generated.resources.datePlaceholder
 import parkingmbakaikoa.shared.generated.resources.defaultErrorCreatingBookingText
 import parkingmbakaikoa.shared.generated.resources.entryTime
 import parkingmbakaikoa.shared.generated.resources.errorCreatingBookingTitle
 import parkingmbakaikoa.shared.generated.resources.exitTime
+import parkingmbakaikoa.shared.generated.resources.loading
+import parkingmbakaikoa.shared.generated.resources.parkingSpotLabel
+import parkingmbakaikoa.shared.generated.resources.searchSpotPlaceholder
+import parkingmbakaikoa.shared.generated.resources.selectVehicle
+import parkingmbakaikoa.shared.generated.resources.timePlaceholder
 import kotlin.time.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,7 +123,7 @@ fun CreateBookingScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         DatePickerField(
-            label = "Fecha",
+            label = stringResource(Res.string.bookingDate),
             value = uiState.date,
             onClick = { showDatePicker = true },
             error = uiState.dateError
@@ -176,12 +192,6 @@ fun CreateBookingScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = "Vehículo",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
             ExposedDropdownMenuBox(
                 expanded = vehicleDropdownExpanded,
                 onExpandedChange = { vehicleDropdownExpanded = !vehicleDropdownExpanded }
@@ -190,22 +200,28 @@ fun CreateBookingScreen(
                     value = uiState.selectedVehicle?.plate ?: "",
                     onValueChange = {},
                     readOnly = true,
-                    placeholder = { Text("Selecciona un vehículo") },
+                    label = { Text(stringResource(Res.string.bookingVehicle)) },
+                    placeholder = { Text(stringResource(Res.string.selectVehicle)) },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Default.DirectionsCar,
+                            imageVector = uiState.selectedVehicle?.let { getVehicleIcon(it.type) } ?: Icons.Default.DirectionsCar,
                             contentDescription = null,
-                            tint = subtitleGreyMedium
+                            tint = if (uiState.selectedVehicle != null) PrimaryColor else subtitleGreyMedium
                         )
                     },
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = vehicleDropdownExpanded)
                     },
-                    colors = OutlinedTextFieldDefaults.colors(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryColor,
+                        focusedLabelColor = PrimaryColor,
+                        cursorColor = PrimaryColor
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
-                    isError = uiState.vehicleError != null
+                    isError = uiState.vehicleError != null,
+                    shape = MaterialTheme.shapes.medium
                 )
 
                 ExposedDropdownMenu(
@@ -215,15 +231,19 @@ fun CreateBookingScreen(
                     userVehicles.forEach { vehicle ->
                         DropdownMenuItem(
                             text = {
-                                Column {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = getVehicleIcon(vehicle.type),
+                                        contentDescription = null,
+                                        tint = PrimaryColor,
+                                        modifier = Modifier.size(24.dp)
+                                    )
                                     Text(
                                         text = vehicle.plate,
                                         style = MaterialTheme.typography.bodyLarge
-                                    )
-                                    Text(
-                                        text = vehicle.type.name,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = subtitleGreyMedium
                                     )
                                 }
                             },
@@ -249,24 +269,19 @@ fun CreateBookingScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = "Plaza de Parking",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
             OutlinedTextField(
                 value = uiState.parkingSpotSearch,
                 onValueChange = {
                     viewModel.onParkingSpotSearchChanged(it)
                     showParkingSpotSuggestions = true
                 },
-                placeholder = { Text("Buscar plaza (ej: A01, B15...)") },
+                label = { Text(stringResource(Res.string.parkingSpotLabel)) },
+                placeholder = { Text(stringResource(Res.string.searchSpotPlaceholder)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.LocalParking,
                         contentDescription = null,
-                        tint = subtitleGreyMedium
+                        tint = if (uiState.parkingSpotSearch.isNotEmpty()) PrimaryColor else subtitleGreyMedium
                     )
                 },
                 trailingIcon = {
@@ -283,9 +298,20 @@ fun CreateBookingScreen(
                         }
                     }
                 },
-                colors = OutlinedTextFieldDefaults.colors(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = PrimaryColor,
+                    focusedLabelColor = PrimaryColor,
+                    cursorColor = PrimaryColor,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    disabledLeadingIconColor = subtitleGreyMedium.copy(alpha = 0.5f),
+                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                ),
                 modifier = Modifier.fillMaxWidth(),
-                isError = uiState.parkingSpotError != null
+                isError = uiState.parkingSpotError != null,
+                enabled = uiState.parkingSpotSearchEnabled,
+                shape = MaterialTheme.shapes.medium
             )
 
             if (showParkingSpotSuggestions && filteredParkingSpots.isNotEmpty()) {
@@ -293,10 +319,11 @@ fun CreateBookingScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 200.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
-                    )
+                    ),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     LazyColumn {
                         items(filteredParkingSpots) { spot ->
@@ -336,7 +363,7 @@ fun CreateBookingScreen(
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
                                         Text(
-                                            text = "Disponible",
+                                            text = stringResource(Res.string.available),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = subtitleGreyMedium
                                         )
@@ -365,10 +392,19 @@ fun CreateBookingScreen(
                     viewModel.validateAndCreateBooking()
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryColor,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            shape = MaterialTheme.shapes.medium
         ) {
-            Text(stringResource(Res.string.createBooking))
+            Text(
+                text = stringResource(Res.string.createBooking),
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 
@@ -406,12 +442,6 @@ private fun DatePickerField(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -421,23 +451,28 @@ private fun DatePickerField(
                 value = value,
                 onValueChange = {},
                 readOnly = true,
-                placeholder = { Text("DD/MM/AAAA") },
+                label = { Text(label) },
+                placeholder = { Text(stringResource(Res.string.datePlaceholder)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.CalendarToday,
                         contentDescription = null,
-                        tint = subtitleGreyMedium
+                        tint = if (value.isNotEmpty()) PrimaryColor else subtitleGreyMedium
                     )
                 },
                 colors = OutlinedTextFieldDefaults.colors(
                     disabledTextColor = MaterialTheme.colorScheme.onSurface,
                     disabledBorderColor = MaterialTheme.colorScheme.outline,
                     disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLeadingIconColor = subtitleGreyMedium
+                    disabledLeadingIconColor = subtitleGreyMedium,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedBorderColor = PrimaryColor,
+                    focusedLabelColor = PrimaryColor
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 isError = error != null,
-                enabled = false
+                enabled = false,
+                shape = MaterialTheme.shapes.medium
             )
         }
 
@@ -463,12 +498,6 @@ private fun TimePickerField(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
         Box(
             modifier = Modifier.clickable(onClick = onClick)
         ) {
@@ -476,23 +505,28 @@ private fun TimePickerField(
                 value = value,
                 onValueChange = {},
                 readOnly = true,
-                placeholder = { Text("HH:MM") },
+                label = { Text(label) },
+                placeholder = { Text(stringResource(Res.string.timePlaceholder)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.AccessTime,
                         contentDescription = null,
-                        tint = subtitleGreyMedium
+                        tint = if (value.isNotEmpty()) PrimaryColor else subtitleGreyMedium
                     )
                 },
                 colors = OutlinedTextFieldDefaults.colors(
                     disabledTextColor = MaterialTheme.colorScheme.onSurface,
                     disabledBorderColor = MaterialTheme.colorScheme.outline,
                     disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLeadingIconColor = subtitleGreyMedium
+                    disabledLeadingIconColor = subtitleGreyMedium,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedBorderColor = PrimaryColor,
+                    focusedLabelColor = PrimaryColor
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 isError = error != null,
-                enabled = false
+                enabled = false,
+                shape = MaterialTheme.shapes.medium
             )
         }
 
@@ -595,7 +629,7 @@ private fun LoadingDialog() {
                     modifier = Modifier.size(48.dp)
                 )
                 Text(
-                    text = "Cargando...",
+                    text = stringResource(Res.string.loading),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -636,7 +670,8 @@ private fun ErrorDialog(
         confirmButton = {
             Button(
                 onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                shape = MaterialTheme.shapes.medium
             ) {
                 Text(confirmButtonText)
             }
@@ -660,25 +695,34 @@ private fun SuccessDialog(
         },
         title = {
             Text(
-                text = "Reserva creada",
+                text = stringResource(Res.string.bookingCreatedTitle),
                 style = MaterialTheme.typography.titleLarge
             )
         },
         text = {
             Text(
-                text = "La reserva se creó correctamente.",
+                text = stringResource(Res.string.bookingCreatedMessage),
                 style = MaterialTheme.typography.bodyMedium
             )
         },
         confirmButton = {
             Button(
                 onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                shape = MaterialTheme.shapes.medium
             ) {
-                Text("Aceptar")
+                Text(stringResource(Res.string.accept))
             }
         }
     )
+}
+
+private fun getVehicleIcon(type: VehicleType): ImageVector {
+    return when (type) {
+        VehicleType.CAR -> Icons.Default.DirectionsCar
+        VehicleType.MOTORBIKE -> Icons.Default.TwoWheeler
+        VehicleType.ELECTRIC_CAR -> Icons.Default.ElectricCar
+    }
 }
 
 

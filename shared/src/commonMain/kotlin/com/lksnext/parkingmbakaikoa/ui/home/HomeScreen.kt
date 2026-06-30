@@ -30,8 +30,10 @@ import com.lksnext.parkingmbakaikoa.data.repository.AuthRepository
 import com.lksnext.parkingmbakaikoa.data.repository.BookingRepository
 import com.lksnext.parkingmbakaikoa.data.repository.UserRepository
 import com.lksnext.parkingmbakaikoa.data.repository.VehicleRepository
-import com.lksnext.parkingmbakaikoa.ui.home.screens.CalendarioScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.HistorialScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.history.HistorialViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.calendar.CalendarioScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.calendar.CalendarioViewModel
 import com.lksnext.parkingmbakaikoa.ui.home.screens.bookingDetail.BookingDetailScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.bookingDetail.BookingDetailViewModel
 import com.lksnext.parkingmbakaikoa.ui.home.screens.myBookings.MyBookingsScreen
@@ -51,9 +53,13 @@ import com.lksnext.parkingmbakaikoa.ui.theme.SecondaryColor
 import com.lksnext.parkingmbakaikoa.ui.theme.SurfaceLight
 import org.jetbrains.compose.resources.stringResource
 import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.appName
+import parkingmbakaikoa.shared.generated.resources.back
+import parkingmbakaikoa.shared.generated.resources.bookingDetailTitle
 import parkingmbakaikoa.shared.generated.resources.calendar
 import parkingmbakaikoa.shared.generated.resources.history
 import parkingmbakaikoa.shared.generated.resources.myBookings
+import parkingmbakaikoa.shared.generated.resources.newBookingTitle
 import parkingmbakaikoa.shared.generated.resources.profile
 
 @Composable
@@ -66,6 +72,8 @@ fun HomeScreen(
 ) {
     val homeNavController = rememberNavController()
     val myBookingsViewModel = viewModel { MyBookingsViewModel() }
+    val calendarioViewModel = viewModel { CalendarioViewModel() }
+    val historialViewModel = viewModel { HistorialViewModel() }
     val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -74,9 +82,9 @@ fun HomeScreen(
         Routes.Calendar.name -> stringResource(Res.string.calendar)
         Routes.History.name -> stringResource(Res.string.history)
         Routes.Profile.name -> stringResource(Res.string.profile)
-        Routes.BookingDetail.name -> "Detalle de Reserva"
-        Routes.CreateBooking.name -> "Nueva Reserva"
-        else -> "Parking App"
+        Routes.BookingDetail.name -> stringResource(Res.string.bookingDetailTitle)
+        Routes.CreateBooking.name -> stringResource(Res.string.newBookingTitle)
+        else -> stringResource(Res.string.appName)
     }
 
     Column(
@@ -93,13 +101,17 @@ fun HomeScreen(
                         onClick = {
                             if (currentRoute == Routes.BookingDetail.name) {
                                 myBookingsViewModel.clearSelection()
+                                historialViewModel.clearSelection()
+                            }
+                            if (currentRoute == Routes.CreateBooking.name) {
+                                calendarioViewModel.clearSelectedSpot()
                             }
                             homeNavController.popBackStack()
                         }
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver"
+                            contentDescription = stringResource(Res.string.back)
                         )
                     }
                 }
@@ -122,10 +134,21 @@ fun HomeScreen(
                     )
                 }
                 composable(route = Routes.Calendar.name) {
-                    CalendarioScreen()
+                    CalendarioScreen(
+                        viewModel = calendarioViewModel,
+                        onSpotSelected = {
+                            homeNavController.navigate(Routes.CreateBooking.name)
+                        }
+                    )
                 }
                 composable(route = Routes.History.name) {
-                    HistorialScreen()
+                    HistorialScreen(
+                        viewModel = historialViewModel,
+                        onBookingClick = { booking ->
+                            historialViewModel.selectBooking(booking)
+                            homeNavController.navigate(Routes.BookingDetail.name)
+                        }
+                    )
                 }
                 composable(route = Routes.Profile.name) {
                     ProfileScreen(
@@ -147,7 +170,9 @@ fun HomeScreen(
                     )
                 }
                 composable(route = Routes.BookingDetail.name) {
-                    val selectedBooking = myBookingsViewModel.selectedBooking.value
+                    // La reserva puede venir de "Mis reservas" o del "Historial"
+                    val selectedBooking = historialViewModel.selectedBooking.value
+                        ?: myBookingsViewModel.selectedBooking.value
                     if (selectedBooking != null) {
                         BookingDetailScreen(
                             booking = selectedBooking,
@@ -159,9 +184,11 @@ fun HomeScreen(
                     }
                 }
                 composable(route = Routes.CreateBooking.name) {
+                    val preselectedSpot = calendarioViewModel.selectedSpot.value
                     CreateBookingScreen(
-                        viewModel = viewModel { CreateBookingViewModel(bookingRepository)},
+                        viewModel = viewModel { CreateBookingViewModel(bookingRepository, preselectedSpot) },
                         onBookingCreated = {
+                            calendarioViewModel.clearSelectedSpot()
                             homeNavController.navigate(Routes.MyBookings.name) {
                                 popUpTo(Routes.MyBookings.name) { inclusive = true }
                             }
@@ -191,6 +218,7 @@ fun HomeScreen(
                 label = { Text(stringResource(Res.string.myBookings)) },
                 selected = currentRoute == Routes.MyBookings.name || currentRoute == Routes.BookingDetail.name,
                 onClick = {
+                    historialViewModel.clearSelection()
                     homeNavController.navigate(Routes.MyBookings.name) {
                         popUpTo(Routes.MyBookings.name) { inclusive = true }
                     }

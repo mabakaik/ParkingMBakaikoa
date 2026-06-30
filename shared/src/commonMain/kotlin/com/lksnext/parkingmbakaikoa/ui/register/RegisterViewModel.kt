@@ -8,6 +8,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.firstNameMinLength
+import parkingmbakaikoa.shared.generated.resources.invalidEmail
+import parkingmbakaikoa.shared.generated.resources.lastNameMinLength
+import parkingmbakaikoa.shared.generated.resources.registerError
+import parkingmbakaikoa.shared.generated.resources.weakPassword
 
 class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
@@ -21,42 +28,41 @@ class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel(
     val navigateToLogin: StateFlow<Boolean> = _navigateToLogin.asStateFlow()
 
     fun register(firstName: String, lastName: String, email: String, password: String) {
-
-        if (!ValidationUtils.isValidName(firstName)) {
-            _uiState.value = RegisterUiState.ValidationError("firstName", "El nombre debe tener al menos 2 caracteres")
-            return
-        }
-
-        if (!ValidationUtils.isValidName(lastName)) {
-            _uiState.value = RegisterUiState.ValidationError("lastName", "Los apellidos deben tener al menos 2 caracteres")
-            return
-        }
-
-        if (!ValidationUtils.isValidEmail(email)) {
-            _uiState.value = RegisterUiState.ValidationError("email", "Email inválido")
-            return
-        }
-
-        if (!ValidationUtils.isStrongPassword(password)) {
-            _uiState.value = RegisterUiState.ValidationError(
-                "password",
-                "La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un símbolo especial"
-            )
-            return
-        }
-
         viewModelScope.launch {
+            if (!ValidationUtils.isValidName(firstName)) {
+                _uiState.value = RegisterUiState.ValidationError("firstName", getString(Res.string.firstNameMinLength))
+                return@launch
+            }
+
+            if (!ValidationUtils.isValidName(lastName)) {
+                _uiState.value = RegisterUiState.ValidationError("lastName", getString(Res.string.lastNameMinLength))
+                return@launch
+            }
+
+            if (!ValidationUtils.isValidEmail(email)) {
+                _uiState.value = RegisterUiState.ValidationError("email", getString(Res.string.invalidEmail))
+                return@launch
+            }
+
+            if (!ValidationUtils.isStrongPassword(password)) {
+                _uiState.value = RegisterUiState.ValidationError(
+                    "password",
+                    getString(Res.string.weakPassword)
+                )
+                return@launch
+            }
+
             _uiState.value = RegisterUiState.Loading
 
             val registerResult = authRepository.register(firstName, lastName, email, password)
-            
+
             registerResult.fold(
                 onSuccess = {
                     _uiState.value = RegisterUiState.Success
                     _showSuccessDialog.value = true
                 },
                 onFailure = {
-                    _uiState.value = RegisterUiState.Error(it.message ?: "Error en el registro")
+                    _uiState.value = RegisterUiState.Error(it.message ?: getString(Res.string.registerError))
                 }
             )
         }

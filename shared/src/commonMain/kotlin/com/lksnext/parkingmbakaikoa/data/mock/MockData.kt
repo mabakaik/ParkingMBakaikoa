@@ -152,4 +152,24 @@ object MockData {
     val mockVehicles = listOf(mockVehicleCar1, mockVehicleCar2, mockVehicleMotorbike, mockVehicleElectric)
     val mockParkingSpots = listOf(mockParkingSpot1, mockParkingSpot2, mockParkingSpot3)
     val mockBookings = listOf(mockBooking1, mockBooking2, mockBooking3, mockBooking4, mockBooking5)
+
+    // Mock de plazas para el calendario: 24 plazas en total
+    // 18 de coche normal, 2 de coche eléctrico y 4 de moto
+    val mockCalendarParkingSpots: List<ParkingSpot> = buildList {
+        // 18 plazas de coche (A01..A18)
+        for (i in 1..18) {
+            val name = "A" + i.toString().padStart(2, '0')
+            add(ParkingSpot(id = name, name = name, status = "Libre", type = VehicleType.CAR))
+        }
+        // 2 plazas de coche eléctrico (E01..E02)
+        for (i in 1..2) {
+            val name = "E" + i.toString().padStart(2, '0')
+            add(ParkingSpot(id = name, name = name, status = "Libre", type = VehicleType.ELECTRIC_CAR))
+        }
+        // 4 plazas de moto (M01..M04)
+        for (i in 1..4) {
+            val name = "M" + i.toString().padStart(2, '0')
+            add(ParkingSpot(id = name, name = name, status = "Libre", type = VehicleType.MOTORBIKE))
+        }
+    }
 }

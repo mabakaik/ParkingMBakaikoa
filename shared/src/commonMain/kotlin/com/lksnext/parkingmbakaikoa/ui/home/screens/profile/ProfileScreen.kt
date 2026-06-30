@@ -62,6 +62,9 @@ import parkingmbakaikoa.shared.generated.resources.cancel
 import parkingmbakaikoa.shared.generated.resources.delete
 import parkingmbakaikoa.shared.generated.resources.deleteVehicleConfirm
 import parkingmbakaikoa.shared.generated.resources.deleteVehicleMessage
+import parkingmbakaikoa.shared.generated.resources.editProfile
+import parkingmbakaikoa.shared.generated.resources.emailLabel
+import parkingmbakaikoa.shared.generated.resources.firstName
 import parkingmbakaikoa.shared.generated.resources.logout
 import parkingmbakaikoa.shared.generated.resources.myVehicles
 import parkingmbakaikoa.shared.generated.resources.noVehicles
@@ -191,7 +194,7 @@ private fun PersonalInfoCard(
                 IconButton(onClick = onEditClick) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Editar perfil",
+                        contentDescription = stringResource(Res.string.editProfile),
                         tint = PrimaryColor
                     )
                 }
@@ -201,12 +204,12 @@ private fun PersonalInfoCard(
 
             user?.let {
                 InfoRow(
-                    label = "Nombre",
+                    label = stringResource(Res.string.firstName),
                     value = "${it.firstName} ${it.lastName}"
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 InfoRow(
-                    label = "Email",
+                    label = stringResource(Res.string.emailLabel),
                     value = it.email
                 )
             }
@@ -353,7 +356,7 @@ private fun VehicleItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Eliminar",
+                        contentDescription = stringResource(Res.string.delete),
                         tint = MaterialTheme.colorScheme.error
                     )
                 }

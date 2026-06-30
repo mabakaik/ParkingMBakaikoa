@@ -47,6 +47,19 @@ import com.lksnext.parkingmbakaikoa.ui.home.screens.myBookings.getBookingStatusT
 import com.lksnext.parkingmbakaikoa.ui.theme.CardShape
 import com.lksnext.parkingmbakaikoa.ui.theme.PrimaryColor
 import com.lksnext.parkingmbakaikoa.ui.theme.subtitleGreyMedium
+import org.jetbrains.compose.resources.stringResource
+import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.bookingDate
+import parkingmbakaikoa.shared.generated.resources.bookingTime
+import parkingmbakaikoa.shared.generated.resources.bookingVehicle
+import parkingmbakaikoa.shared.generated.resources.entryLabel
+import parkingmbakaikoa.shared.generated.resources.exitLabel
+import parkingmbakaikoa.shared.generated.resources.modifyBooking
+import parkingmbakaikoa.shared.generated.resources.notRegistered
+import parkingmbakaikoa.shared.generated.resources.registerEntry
+import parkingmbakaikoa.shared.generated.resources.registerExit
+import parkingmbakaikoa.shared.generated.resources.scheduleRecord
+import parkingmbakaikoa.shared.generated.resources.spotName
 
 @Composable
 fun BookingDetailScreen(
@@ -82,7 +95,7 @@ fun BookingDetailScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Plaza ${booking.parkingSpot.name}",
+                        text = stringResource(Res.string.spotName, booking.parkingSpot.name),
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -108,19 +121,19 @@ fun BookingDetailScreen(
 
                 DetailRow(
                     icon = Icons.Default.CalendarToday,
-                    label = "Fecha",
+                    label = stringResource(Res.string.bookingDate),
                     value = booking.date
                 )
 
                 DetailRow(
                     icon = Icons.Default.Timer,
-                    label = "Hora",
+                    label = stringResource(Res.string.bookingTime),
                     value = booking.entryTime + " - " + booking.exitTime
                 )
 
                 DetailRow(
                     icon = Icons.Default.DirectionsCar,
-                    label = "Vehículo",
+                    label = stringResource(Res.string.bookingVehicle),
                     value = booking.vehicle.plate
                 )
             }
@@ -142,15 +155,15 @@ fun BookingDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Registro de horarios",
+                    text = stringResource(Res.string.scheduleRecord),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
                 DetailRow(
                     icon = Icons.Default.Login,
-                    label = "Entrada",
-                    value = booking.actualEntryTime ?: "No registrada",
+                    label = stringResource(Res.string.entryLabel),
+                    value = booking.actualEntryTime ?: stringResource(Res.string.notRegistered),
                     valueColor = if (booking.actualEntryTime != null)
                         MaterialTheme.colorScheme.onSurface
                     else
@@ -159,8 +172,8 @@ fun BookingDetailScreen(
 
             DetailRow(
                 icon = Icons.AutoMirrored.Filled.Logout,
-                label = "Salida",
-                    value = booking.actualExitTime ?: "No registrada",
+                label = stringResource(Res.string.exitLabel),
+                    value = booking.actualExitTime ?: stringResource(Res.string.notRegistered),
                     valueColor = if (booking.actualExitTime != null)
                         MaterialTheme.colorScheme.onSurface
                     else
@@ -188,7 +201,7 @@ fun BookingDetailScreen(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
-                    Text("Registrar Entrada")
+                    Text(stringResource(Res.string.registerEntry))
                 }
             }
 
@@ -206,7 +219,7 @@ fun BookingDetailScreen(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
-                    Text("Registrar Salida")
+                    Text(stringResource(Res.string.registerExit))
                 }
             }
 
@@ -221,7 +234,7 @@ fun BookingDetailScreen(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
-                    Text("Modificar Reserva")
+                    Text(stringResource(Res.string.modifyBooking))
                 }
             }
         }
