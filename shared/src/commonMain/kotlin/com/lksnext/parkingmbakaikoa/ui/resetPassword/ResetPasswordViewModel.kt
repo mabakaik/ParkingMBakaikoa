@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.invalidEmail
+import parkingmbakaikoa.shared.generated.resources.resetPasswordError
 
 class ResetPasswordViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
@@ -15,18 +19,18 @@ class ResetPasswordViewModel(private val authRepository: AuthRepository) : ViewM
     val uiState: StateFlow<ResetPasswordUiState> = _uiState.asStateFlow()
 
     fun resetPassword(email: String) {
-        if (!ValidationUtils.isValidEmail(email)) {
-            _uiState.value = ResetPasswordUiState.ValidationError("email", "Email inválido")
-            return
-        }
-
         viewModelScope.launch {
+            if (!ValidationUtils.isValidEmail(email)) {
+                _uiState.value = ResetPasswordUiState.ValidationError("email", getString(Res.string.invalidEmail))
+                return@launch
+            }
+
             _uiState.value = ResetPasswordUiState.Loading
 
             val result = authRepository.sendPasswordResetEmail(email)
             _uiState.value = result.fold(
                 onSuccess = { ResetPasswordUiState.Success },
-                onFailure = { ResetPasswordUiState.Error(it.message ?: "Error al enviar el correo de recuperación") }
+                onFailure = { ResetPasswordUiState.Error(it.message ?: getString(Res.string.resetPasswordError)) }
             )
         }
     }

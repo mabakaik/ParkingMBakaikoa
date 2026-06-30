@@ -54,11 +54,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.lksnext.parkingmbakaikoa.data.repository.AuthRepository
 import com.lksnext.parkingmbakaikoa.ui.navigation.Routes
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
+import parkingmbakaikoa.shared.generated.resources.accept
+import parkingmbakaikoa.shared.generated.resources.succesfullRegisterDialogText
+import parkingmbakaikoa.shared.generated.resources.succesfullRegisterDialogTitle
 
 @Composable
 fun RegisterScreen(navController: NavController, authRepository: AuthRepository) {
     val viewModel = viewModel { RegisterViewModel(authRepository) }
     val uiState by viewModel.uiState.collectAsState()
+    val showSuccessDialog by viewModel.showSuccessDialog.collectAsState()
+    val navigateToLogin by viewModel.navigateToLogin.collectAsState()
 
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
@@ -66,6 +74,15 @@ fun RegisterScreen(navController: NavController, authRepository: AuthRepository)
     var password by remember { mutableStateOf("") }
 
     val isLoading = uiState is RegisterUiState.Loading
+
+    LaunchedEffect(navigateToLogin) {
+        if (navigateToLogin) {
+            navController.navigate(Routes.Login.name) {
+                popUpTo(Routes.Register.name) { inclusive = true }
+            }
+            viewModel.onNavigationComplete()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -241,6 +258,32 @@ fun RegisterScreen(navController: NavController, authRepository: AuthRepository)
                     }
                 )
             }
+        }
+
+        if (showSuccessDialog) {
+            AlertDialog(
+                onDismissRequest = { viewModel.onSuccessDialogConfirm() },
+                title = {
+                    Text(
+                        text = stringResource(Res.string.succesfullRegisterDialogTitle),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = PrimaryColor
+                    )
+                },
+                text = {
+                    Text(
+                        text =  stringResource(Res.string.succesfullRegisterDialogText),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = { viewModel.onSuccessDialogConfirm() }
+                    ) {
+                        Text(stringResource(Res.string.accept), color = PrimaryColor)
+                    }
+                }
+            )
         }
     }
 }

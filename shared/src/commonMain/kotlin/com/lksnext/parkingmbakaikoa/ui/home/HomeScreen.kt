@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.History
@@ -17,47 +17,105 @@ import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.lksnext.parkingmbakaikoa.ui.auth.AuthStateViewModel
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.lksnext.parkingmbakaikoa.data.repository.AuthRepository
-import com.lksnext.parkingmbakaikoa.ui.home.screens.CalendarioScreen
+import com.lksnext.parkingmbakaikoa.data.repository.BookingRepository
+import com.lksnext.parkingmbakaikoa.data.repository.UserRepository
+import com.lksnext.parkingmbakaikoa.data.repository.VehicleRepository
 import com.lksnext.parkingmbakaikoa.ui.home.screens.HistorialScreen
-import com.lksnext.parkingmbakaikoa.ui.home.screens.PerfilScreen
-import com.lksnext.parkingmbakaikoa.ui.home.screens.ReservasScreen
-import com.lksnext.parkingmbakaikoa.ui.navigation.HomeTab
+import com.lksnext.parkingmbakaikoa.ui.home.screens.history.HistorialViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.calendar.CalendarioScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.calendar.CalendarioViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.bookingDetail.BookingDetailScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.bookingDetail.BookingDetailViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.myBookings.MyBookingsScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.myBookings.MyBookingsViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.createBooking.CreateBookingScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.createBooking.CreateBookingViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.addVehicle.AddVehicleScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.addVehicle.AddVehicleViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.editProfile.EditProfileScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.editProfile.EditProfileViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.ProfileScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.ProfileViewModel
+import com.lksnext.parkingmbakaikoa.ui.navigation.Routes
 import com.lksnext.parkingmbakaikoa.ui.theme.BackgroundLight
 import com.lksnext.parkingmbakaikoa.ui.theme.PrimaryColor
 import com.lksnext.parkingmbakaikoa.ui.theme.SecondaryColor
 import com.lksnext.parkingmbakaikoa.ui.theme.SurfaceLight
 import org.jetbrains.compose.resources.stringResource
 import parkingmbakaikoa.shared.generated.resources.Res
+import parkingmbakaikoa.shared.generated.resources.appName
+import parkingmbakaikoa.shared.generated.resources.back
+import parkingmbakaikoa.shared.generated.resources.bookingDetailTitle
 import parkingmbakaikoa.shared.generated.resources.calendar
 import parkingmbakaikoa.shared.generated.resources.history
 import parkingmbakaikoa.shared.generated.resources.myBookings
+import parkingmbakaikoa.shared.generated.resources.newBookingTitle
 import parkingmbakaikoa.shared.generated.resources.profile
 
 @Composable
-fun HomeScreen(authRepository: AuthRepository) {
-    val authStateViewModel = viewModel { AuthStateViewModel(authRepository) }
-    val selectedTab = remember { mutableStateOf<HomeTab>(HomeTab.MyBookings) }
+fun HomeScreen(
+    authRepository: AuthRepository,
+    bookingRepository: BookingRepository,
+    vehicleRepository: VehicleRepository,
+    userRepository: UserRepository,
+    authStateViewModel: AuthStateViewModel
+) {
+    val homeNavController = rememberNavController()
+    val myBookingsViewModel = viewModel { MyBookingsViewModel() }
+    val calendarioViewModel = viewModel { CalendarioViewModel() }
+    val historialViewModel = viewModel { HistorialViewModel() }
+    val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val title = when (currentRoute) {
+        Routes.MyBookings.name -> stringResource(Res.string.myBookings)
+        Routes.Calendar.name -> stringResource(Res.string.calendar)
+        Routes.History.name -> stringResource(Res.string.history)
+        Routes.Profile.name -> stringResource(Res.string.profile)
+        Routes.BookingDetail.name -> stringResource(Res.string.bookingDetailTitle)
+        Routes.CreateBooking.name -> stringResource(Res.string.newBookingTitle)
+        else -> stringResource(Res.string.appName)
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         TopAppBar(
-            title = { Text("Parking App") },
-            actions = {
-                IconButton(
-                    onClick = { authStateViewModel.logout() }
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout")
+            title = { Text(title) },
+            navigationIcon = {
+                if (currentRoute == Routes.BookingDetail.name ||
+                    currentRoute == Routes.CreateBooking.name ||
+                    currentRoute == Routes.EditProfile.name ||
+                    currentRoute == Routes.AddVehicle.name) {
+                    IconButton(
+                        onClick = {
+                            if (currentRoute == Routes.BookingDetail.name) {
+                                myBookingsViewModel.clearSelection()
+                                historialViewModel.clearSelection()
+                            }
+                            if (currentRoute == Routes.CreateBooking.name) {
+                                calendarioViewModel.clearSelectedSpot()
+                            }
+                            homeNavController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.back)
+                        )
+                    }
                 }
-            }
+            },
         )
 
         Column(
@@ -65,11 +123,78 @@ fun HomeScreen(authRepository: AuthRepository) {
                 .fillMaxWidth()
                 .weight(1f)
         ) {
-            when (selectedTab.value) {
-                HomeTab.MyBookings -> ReservasScreen()
-                HomeTab.Calendar -> CalendarioScreen()
-                HomeTab.History -> HistorialScreen()
-                HomeTab.Profile -> PerfilScreen()
+            NavHost(
+                navController = homeNavController,
+                startDestination = Routes.MyBookings.name
+            ) {
+                composable(route = Routes.MyBookings.name) {
+                    MyBookingsScreen(
+                        viewModel = myBookingsViewModel,
+                        navController = homeNavController
+                    )
+                }
+                composable(route = Routes.Calendar.name) {
+                    CalendarioScreen(
+                        viewModel = calendarioViewModel,
+                        onSpotSelected = {
+                            homeNavController.navigate(Routes.CreateBooking.name)
+                        }
+                    )
+                }
+                composable(route = Routes.History.name) {
+                    HistorialScreen(
+                        viewModel = historialViewModel,
+                        onBookingClick = { booking ->
+                            historialViewModel.selectBooking(booking)
+                            homeNavController.navigate(Routes.BookingDetail.name)
+                        }
+                    )
+                }
+                composable(route = Routes.Profile.name) {
+                    ProfileScreen(
+                        viewModel = viewModel { ProfileViewModel(userRepository, vehicleRepository) },
+                        authStateViewModel = authStateViewModel,
+                        navController = homeNavController
+                    )
+                }
+                composable(route = Routes.EditProfile.name) {
+                    EditProfileScreen(
+                        viewModel = viewModel { EditProfileViewModel(userRepository) },
+                        onBack = { homeNavController.popBackStack() }
+                    )
+                }
+                composable(route = Routes.AddVehicle.name) {
+                    AddVehicleScreen(
+                        viewModel = viewModel { AddVehicleViewModel(vehicleRepository) },
+                        onBack = { homeNavController.popBackStack() }
+                    )
+                }
+                composable(route = Routes.BookingDetail.name) {
+                    // La reserva puede venir de "Mis reservas" o del "Historial"
+                    val selectedBooking = historialViewModel.selectedBooking.value
+                        ?: myBookingsViewModel.selectedBooking.value
+                    if (selectedBooking != null) {
+                        BookingDetailScreen(
+                            booking = selectedBooking,
+                            onModify = {
+                                // TODO: Navegar a pantalla de modificar
+                            },
+                            viewModel = viewModel { BookingDetailViewModel() }
+                        )
+                    }
+                }
+                composable(route = Routes.CreateBooking.name) {
+                    val preselectedSpot = calendarioViewModel.selectedSpot.value
+                    CreateBookingScreen(
+                        viewModel = viewModel { CreateBookingViewModel(bookingRepository, preselectedSpot) },
+                        onBookingCreated = {
+                            calendarioViewModel.clearSelectedSpot()
+                            homeNavController.navigate(Routes.MyBookings.name) {
+                                popUpTo(Routes.MyBookings.name) { inclusive = true }
+                            }
+                        }
+                    )
+                }
             }
         }
 
@@ -91,32 +216,48 @@ fun HomeScreen(authRepository: AuthRepository) {
             NavigationBarItem(
                 icon = { Icon(Icons.Default.DirectionsCar, contentDescription = null) },
                 label = { Text(stringResource(Res.string.myBookings)) },
-                selected = selectedTab.value == HomeTab.MyBookings,
-                onClick = { selectedTab.value = HomeTab.MyBookings },
+                selected = currentRoute == Routes.MyBookings.name || currentRoute == Routes.BookingDetail.name,
+                onClick = {
+                    historialViewModel.clearSelection()
+                    homeNavController.navigate(Routes.MyBookings.name) {
+                        popUpTo(Routes.MyBookings.name) { inclusive = true }
+                    }
+                },
                 colors = navItemColors,
             )
             NavigationBarItem(
                 icon = { Icon(Icons.Default.CalendarToday, contentDescription = null) },
                 label = { Text(stringResource(Res.string.calendar)) },
-                selected = selectedTab.value == HomeTab.Calendar,
-                onClick = { selectedTab.value = HomeTab.Calendar },
+                selected = currentRoute == Routes.Calendar.name,
+                onClick = {
+                    homeNavController.navigate(Routes.Calendar.name) {
+                        popUpTo(Routes.MyBookings.name)
+                    }
+                },
                 colors = navItemColors,
             )
             NavigationBarItem(
                 icon = { Icon(Icons.Default.History, contentDescription = null) },
                 label = { Text(stringResource(Res.string.history)) },
-                selected = selectedTab.value == HomeTab.History,
-                onClick = { selectedTab.value = HomeTab.History },
+                selected = currentRoute == Routes.History.name,
+                onClick = {
+                    homeNavController.navigate(Routes.History.name) {
+                        popUpTo(Routes.MyBookings.name)
+                    }
+                },
                 colors = navItemColors,
             )
             NavigationBarItem(
                 icon = { Icon(Icons.Default.Person, contentDescription = null) },
                 label = { Text(stringResource(Res.string.profile)) },
-                selected = selectedTab.value == HomeTab.Profile,
-                onClick = { selectedTab.value = HomeTab.Profile },
+                selected = currentRoute == Routes.Profile.name,
+                onClick = {
+                    homeNavController.navigate(Routes.Profile.name) {
+                        popUpTo(Routes.MyBookings.name)
+                    }
+                },
                 colors = navItemColors,
             )
         }
     }
 }
-

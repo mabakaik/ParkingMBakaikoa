@@ -29,6 +29,9 @@ dependencies {
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
 
+    // Splash Screen nativo de Android
+    implementation("androidx.core:core-splashscreen:1.2.0")
+
     //Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)

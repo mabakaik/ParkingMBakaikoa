@@ -19,5 +19,9 @@ object ValidationUtils {
     fun isValidName(name: String): Boolean {
         return name.isNotBlank() && name.trim().length >= 2
     }
+
+    fun isValidPlate(plate: String): Boolean {
+        return plate.isNotBlank() && plate.trim().length >= 3
+    }
 }
 

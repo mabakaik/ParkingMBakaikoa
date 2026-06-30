@@ -45,6 +45,10 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
+
+            //firebase
+            implementation(libs.firebase.firestore)
+            implementation(libs.firebase.auth)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -59,6 +63,9 @@ kotlin {
 
             //Icons
             implementation(compose.materialIconsExtended)
+
+            //Datetime
+            implementation(libs.kotlinx.datetime)
         }
          commonTest.dependencies {
              implementation(libs.kotlin.test)
@@ -68,7 +75,6 @@ kotlin {
 }
 
 dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
     add("androidMainImplementation", platform(libs.firebase.bom))
-    add("androidMainImplementation", libs.firebase.auth)
+    androidRuntimeClasspath(libs.compose.uiTooling)
 }
