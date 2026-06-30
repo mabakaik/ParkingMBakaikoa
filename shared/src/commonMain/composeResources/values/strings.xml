@@ -8,6 +8,8 @@
     <string name="route_calendar">Calendar</string>
     <string name="route_history">History</string>
     <string name="route_profile">Profile</string>
+    <string name="route_edit_profile">Edit profile</string>
+    <string name="route_add_vehicle">Add vehicle</string>
 
     <!-- Login Screen -->
     <string name="appName">Parking App</string>
@@ -24,6 +26,8 @@
     <string name="firstName">Nombre</string>
     <string name="lastName">Apellidos</string>
     <string name="haveAccount">¿Ya tienes cuenta?</string>
+    <string name="succesfullRegisterDialogTitle">¡Registro exitoso!</string>
+    <string name="succesfullRegisterDialogText">Tu cuenta ha sido creada correctamente. Ya puedes iniciar sesión.</string>
 
     <!-- Reset Password Screen -->
     <string name="resetPassword">Recuperar contraseña</string>
@@ -32,7 +36,7 @@
     <string name="emailSent">Si el correo existe, se ha enviado un correo para resetear tu contraseña</string>
     <string name="doYouRemember">¿Ya lo recordaste?</string>
 
-    <!-- Home -->
+    <!-- TopAppBar titles -->
     <string name="myBookings">Mis reservas</string>
     <string name="calendar">Calendario</string>
     <string name="history">Historial</string>
@@ -50,4 +54,34 @@
     <string name="accept">Aceptar</string>
     <string name="chooseHour">Elige la hora</string>
     <string name="chooseDate">Elige la fecha</string>
+
+    <!-- Profile Screen -->
+    <string name="personalInfo">Información Personal</string>
+    <string name="myVehicles">Mis Vehículos</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="noVehicles">No tienes vehículos registrados</string>
+    <string name="deleteVehicleConfirm">¿Eliminar vehículo?</string>
+    <string name="deleteVehicleMessage">¿Estás seguro de que deseas eliminar este vehículo?</string>
+    <string name="delete">Eliminar</string>
+
+    <!-- Edit Profile Screen -->
+    <string name="editProfile">Editar Perfil</string>
+    <string name="saveChanges">Guardar cambios</string>
+    <string name="profileUpdated">Perfil actualizado correctamente</string>
+
+    <!-- Add Vehicle Screen -->
+    <string name="addVehicle">Añadir Vehículo</string>
+    <string name="vehiclePlate">Matrícula</string>
+    <string name="vehicleType">Tipo de vehículo</string>
+    <string name="selectVehicleType">Selecciona el tipo de vehículo</string>
+    <string name="vehicleAdded">Vehículo añadido correctamente</string>
+    <string name="plateRequired">La matrícula es obligatoria</string>
+    <string name="plateInvalid">La matrícula debe tener al menos 3 caracteres</string>
+    <string name="vehicleTypeRequired">Debes seleccionar un tipo de vehículo</string>
+
+    <!-- Vehicle types -->
+    <string name="vehicleTypeCar">Coche</string>
+    <string name="vehicleTypeMotorbike">Moto</string>
+    <string name="vehicleTypeElectric">Eléctrico</string>
+
 </resources>

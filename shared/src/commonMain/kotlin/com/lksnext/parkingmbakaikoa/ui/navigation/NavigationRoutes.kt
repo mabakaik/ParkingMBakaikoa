@@ -10,6 +10,8 @@ import parkingmbakaikoa.shared.generated.resources.route_my_bookings
 import parkingmbakaikoa.shared.generated.resources.route_profile
 import parkingmbakaikoa.shared.generated.resources.route_register
 import parkingmbakaikoa.shared.generated.resources.route_reset_password
+import parkingmbakaikoa.shared.generated.resources.route_edit_profile
+import parkingmbakaikoa.shared.generated.resources.route_add_vehicle
 
 enum class Routes(val title: StringResource) {
     Home(title = Res.string.route_home),
@@ -22,5 +24,7 @@ enum class Routes(val title: StringResource) {
     Profile(title = Res.string.route_profile),
     BookingDetail(title = Res.string.route_my_bookings),
     CreateBooking(title = Res.string.route_my_bookings),
+    EditProfile(title = Res.string.route_edit_profile),
+    AddVehicle(title = Res.string.route_add_vehicle),
 }
 

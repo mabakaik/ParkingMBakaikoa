@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.History
@@ -29,15 +28,22 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.lksnext.parkingmbakaikoa.data.repository.AuthRepository
 import com.lksnext.parkingmbakaikoa.data.repository.BookingRepository
+import com.lksnext.parkingmbakaikoa.data.repository.UserRepository
+import com.lksnext.parkingmbakaikoa.data.repository.VehicleRepository
 import com.lksnext.parkingmbakaikoa.ui.home.screens.CalendarioScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.HistorialScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.bookingDetail.BookingDetailScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.bookingDetail.BookingDetailViewModel
 import com.lksnext.parkingmbakaikoa.ui.home.screens.myBookings.MyBookingsScreen
-import com.lksnext.parkingmbakaikoa.ui.home.screens.PerfilScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.myBookings.MyBookingsViewModel
 import com.lksnext.parkingmbakaikoa.ui.home.screens.createBooking.CreateBookingScreen
 import com.lksnext.parkingmbakaikoa.ui.home.screens.createBooking.CreateBookingViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.addVehicle.AddVehicleScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.addVehicle.AddVehicleViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.editProfile.EditProfileScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.editProfile.EditProfileViewModel
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.ProfileScreen
+import com.lksnext.parkingmbakaikoa.ui.home.screens.profile.ProfileViewModel
 import com.lksnext.parkingmbakaikoa.ui.navigation.Routes
 import com.lksnext.parkingmbakaikoa.ui.theme.BackgroundLight
 import com.lksnext.parkingmbakaikoa.ui.theme.PrimaryColor
@@ -53,15 +59,16 @@ import parkingmbakaikoa.shared.generated.resources.profile
 @Composable
 fun HomeScreen(
     authRepository: AuthRepository,
-    bookingRepository: BookingRepository
+    bookingRepository: BookingRepository,
+    vehicleRepository: VehicleRepository,
+    userRepository: UserRepository,
+    authStateViewModel: AuthStateViewModel
 ) {
-    val authStateViewModel = viewModel { AuthStateViewModel(authRepository) }
     val homeNavController = rememberNavController()
     val myBookingsViewModel = viewModel { MyBookingsViewModel() }
     val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Obtener el título según la ruta actual
     val title = when (currentRoute) {
         Routes.MyBookings.name -> stringResource(Res.string.myBookings)
         Routes.Calendar.name -> stringResource(Res.string.calendar)
@@ -78,8 +85,10 @@ fun HomeScreen(
         TopAppBar(
             title = { Text(title) },
             navigationIcon = {
-                // Mostrar flecha de back solo en BookingDetail y CreateBooking
-                if (currentRoute == Routes.BookingDetail.name || currentRoute == Routes.CreateBooking.name) {
+                if (currentRoute == Routes.BookingDetail.name ||
+                    currentRoute == Routes.CreateBooking.name ||
+                    currentRoute == Routes.EditProfile.name ||
+                    currentRoute == Routes.AddVehicle.name) {
                     IconButton(
                         onClick = {
                             if (currentRoute == Routes.BookingDetail.name) {
@@ -95,13 +104,6 @@ fun HomeScreen(
                     }
                 }
             },
-            actions = {
-                IconButton(
-                    onClick = { authStateViewModel.logout() }
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout")
-                }
-            }
         )
 
         Column(
@@ -126,7 +128,23 @@ fun HomeScreen(
                     HistorialScreen()
                 }
                 composable(route = Routes.Profile.name) {
-                    PerfilScreen()
+                    ProfileScreen(
+                        viewModel = viewModel { ProfileViewModel(userRepository, vehicleRepository) },
+                        authStateViewModel = authStateViewModel,
+                        navController = homeNavController
+                    )
+                }
+                composable(route = Routes.EditProfile.name) {
+                    EditProfileScreen(
+                        viewModel = viewModel { EditProfileViewModel(userRepository) },
+                        onBack = { homeNavController.popBackStack() }
+                    )
+                }
+                composable(route = Routes.AddVehicle.name) {
+                    AddVehicleScreen(
+                        viewModel = viewModel { AddVehicleViewModel(vehicleRepository) },
+                        onBack = { homeNavController.popBackStack() }
+                    )
                 }
                 composable(route = Routes.BookingDetail.name) {
                     val selectedBooking = myBookingsViewModel.selectedBooking.value

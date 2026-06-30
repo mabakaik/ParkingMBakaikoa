@@ -22,7 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,16 +62,6 @@ fun LoginScreen(navController: NavController, authRepository: AuthRepository) {
     var password by remember { mutableStateOf("") }
 
     val isLoading = uiState is LoginUiState.Loading
-
-    LaunchedEffect(uiState) {
-        if (uiState is LoginUiState.Success) {
-            navController.navigate(Routes.Home.name){
-                popUpTo(Routes.Login.name) {
-                    inclusive = false
-                }
-            }
-        }
-    }
 
     Box(
         modifier = Modifier

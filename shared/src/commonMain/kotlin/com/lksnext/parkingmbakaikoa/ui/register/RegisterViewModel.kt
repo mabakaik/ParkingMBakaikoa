@@ -14,6 +14,12 @@ class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel(
     private val _uiState = MutableStateFlow<RegisterUiState>(RegisterUiState.Idle)
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
 
+    private val _showSuccessDialog = MutableStateFlow(false)
+    val showSuccessDialog: StateFlow<Boolean> = _showSuccessDialog.asStateFlow()
+
+    private val _navigateToLogin = MutableStateFlow(false)
+    val navigateToLogin: StateFlow<Boolean> = _navigateToLogin.asStateFlow()
+
     fun register(firstName: String, lastName: String, email: String, password: String) {
 
         if (!ValidationUtils.isValidName(firstName)) {
@@ -46,19 +52,24 @@ class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel(
             
             registerResult.fold(
                 onSuccess = {
-                    val loginResult = authRepository.login(email, password)
-                    _uiState.value = loginResult.fold(
-                        onSuccess = { RegisterUiState.Success },
-                        onFailure = { 
-                            RegisterUiState.Error("Registro exitoso pero error al iniciar sesión: ${it.message ?: "Error desconocido"}")
-                        }
-                    )
+                    _uiState.value = RegisterUiState.Success
+                    _showSuccessDialog.value = true
                 },
                 onFailure = {
                     _uiState.value = RegisterUiState.Error(it.message ?: "Error en el registro")
                 }
             )
         }
+    }
+
+    fun onSuccessDialogConfirm() {
+        _showSuccessDialog.value = false
+        _navigateToLogin.value = true
+    }
+
+    fun onNavigationComplete() {
+        _navigateToLogin.value = false
+        resetState()
     }
 
     fun resetState() {

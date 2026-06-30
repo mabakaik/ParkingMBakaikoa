@@ -10,43 +10,53 @@ import com.lksnext.parkingmbakaikoa.data.models.VehicleType
 object MockData {
     // Mock Users
     val mockUser1 = User(
-        name = "Maria",
+        id = "1",
+        firstName = "Maria",
+        lastName = "Bakaikoa",
         email = "maria@example.com"
     )
 
     val mockUser2 = User(
-        name = "Juan",
+        id = "2",
+        firstName = "Juan",
+        lastName = "García",
         email = "juan@example.com"
     )
 
     val mockUser3 = User(
-        name = "Ana",
+        id = "3",
+        firstName = "Ana",
+        lastName = "López",
         email = "ana@example.com"
     )
 
     // Mock Vehicles
     val mockVehicleCar1 = Vehicle(
+        id = "V1",
         plate = "1234 ABC",
         type = VehicleType.CAR,
-        user = mockUser1
+        userId = "1"
     )
 
     val mockVehicleCar2 = Vehicle(
+        id = "V2",
         plate = "5678 DEF",
         type = VehicleType.CAR,
-        user = mockUser2
+        userId = "1"
     )
 
     val mockVehicleMotorbike = Vehicle(
+        id = "V3",
         plate = "9012 GHI",
         type = VehicleType.MOTORBIKE,
-        user = mockUser3
+        userId = "1"
     )
 
     val mockVehicleElectric = Vehicle(
+        id = "V4",
         plate = "3456 JKL",
         type = VehicleType.ELECTRIC_CAR,
-        user = mockUser1
+        userId = "1"
     )
 
     // Mock Parking Spots
@@ -89,7 +99,7 @@ object MockData {
         date = "26 Jun 2026",
         status = BookingStatus.EN_CURSO,
         vehicle = mockVehicleCar2,
-        actualEntryTime = "08:35",  // Ya registró entrada
+        actualEntryTime = "08:35",
         actualExitTime = null
     )
 
